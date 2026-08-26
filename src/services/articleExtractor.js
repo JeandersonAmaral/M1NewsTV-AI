@@ -1,5 +1,6 @@
 const { JSDOM } = require("jsdom");
 const { Readability } = require("@mozilla/readability");
+const logger = require("../utils/logger");
 
 async function extrairMateria(url) {
     const response = await fetch(url);
@@ -81,7 +82,7 @@ async function extrairMateria(url) {
         try {
             imagem = new URL(imagem, url).href;
         } catch (error) {
-            console.warn(
+            logger.warn(
                 "Não foi possível transformar a URL da imagem:",
                 imagem
             );
@@ -90,7 +91,7 @@ async function extrairMateria(url) {
         }
     }
 
-    console.log("Imagem encontrada:", imagem);
+    logger.info("Imagem encontrada:", imagem);
 
     // ========================================
     // RETORNAR MATÉRIA

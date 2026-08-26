@@ -1,15 +1,12 @@
 const { GoogleGenAI } = require("@google/genai");
+const logger = require("../utils/logger");
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
-
-/*
-==================================================
-NORMALIZAR TÍTULO
-==================================================
-*/
-
+// ==================================================
+// NORMALIZAR TÍTULO
+// ==================================================
 function normalizarTitulo(texto) {
     return String(texto || "")
         .toLowerCase()
@@ -19,13 +16,9 @@ function normalizarTitulo(texto) {
         .replace(/\s+/g, " ")
         .trim();
 }
-
-/*
-==================================================
-LIMPAR RESPOSTA JSON DO GEMINI
-==================================================
-*/
-
+// ==================================================
+// LIMPAR RESPOSTA JSON DO GEMINI
+// ==================================================
 function limparJson(texto) {
     let resposta = String(texto || "").trim();
 
@@ -38,15 +31,10 @@ function limparJson(texto) {
 
     return resposta;
 }
-
-/*
-==================================================
-GERAR ALT TEXT ESPECÍFICO
-==================================================
-*/
-
+// ==================================================
+// GERAR ALT TEXT ESPECÍFICO
+// ==================================================
 async function gerarAltText(titulo, texto) {
-
     const promptAlt = `
 Você é um editor de acessibilidade e SEO do M1NewsTV.
 
@@ -76,40 +64,28 @@ ${titulo}
 CONTEÚDO DA MATÉRIA:
 
 ${texto}
+
 `;
 
     try {
+        logger.info("Gerando ALT text específico...");
 
-        console.log(
-            "Gerando ALT text específico..."
-        );
+        const response = await chamarGemini(promptAlt);
 
-        const response =
-            await chamarGemini(promptAlt);
-
-        const altText =
-            String(response.text || "")
-                .trim()
-                .replace(/^["']|["']$/g, "");
+        const altText = String(response.text || "")
+            .trim()
+            .replace(/^["']|["']$/g, "");
 
         if (!altText) {
-            console.warn(
-                "Gemini não retornou ALT text."
-            );
-
+            logger.warn("Gemini não retornou ALT text.");
             return "";
         }
 
-        console.log(
-            "ALT text gerado:",
-            altText
-        );
+        logger.info(`ALT text gerado: ${altText}`);
 
         return altText;
-
     } catch (error) {
-
-        console.error(
+        logger.error(
             "Erro ao gerar ALT text:",
             error.message
         );
@@ -117,17 +93,11 @@ ${texto}
         return "";
     }
 }
-
-/*
-==================================================
-FUNÇÃO PARA CHAMAR O GEMINI
-==================================================
-*/
-
+// ==================================================
+// FUNÇÃO PARA CHAMAR O GEMINI
+// ==================================================
 async function chamarGemini(promptAtual) {
-
     let response;
-
     const maxTentativas = 3;
 
     for (
@@ -135,55 +105,38 @@ async function chamarGemini(promptAtual) {
         tentativa <= maxTentativas;
         tentativa++
     ) {
-
         try {
-
-            console.log(
-                `Tentativa ${tentativa}/${maxTentativas} enviando para o Gemini...`
+            logger.info(
+                `Enviando para o Gemini (tentativa ${tentativa}/${maxTentativas})...`
             );
 
-            response =
-                await ai.models.generateContent({
+            response = await ai.models.generateContent({
+                model: "gemini-3.6-flash",
+                contents: promptAtual,
+                config: {
+                    responseMimeType: "application/json"
+                }
+            });
 
-                    model: "gemini-3.6-flash",
-
-                    contents: promptAtual,
-
-                    config: {
-                        responseMimeType: "application/json"
-                    }
-
-                });
-
-            console.log(
-                "Gemini respondeu com sucesso."
-            );
+            logger.info("Gemini respondeu com sucesso.");
 
             return response;
-
         } catch (error) {
-
-            console.error(
+            logger.error(
                 `Erro na tentativa ${tentativa}:`,
                 error.status || error.message
             );
-
-            /*
-            ==========================================
-            RETRY PARA ERRO 503
-            ==========================================
-            */
-
+            // ==========================================
+            // RETRY PARA ERRO 503
+            // ==========================================
             if (
                 error.status === 503 &&
                 tentativa < maxTentativas
             ) {
+                const espera = tentativa * 5000;
 
-                const espera =
-                    tentativa * 5000;
-
-                console.log(
-                    `Gemini indisponível. Tentando novamente em ${espera / 1000} segundos...`
+                logger.warn(
+                    `Gemini indisponível. Nova tentativa em ${espera / 1000} segundos...`
                 );
 
                 await new Promise(
@@ -193,26 +146,17 @@ async function chamarGemini(promptAtual) {
                             espera
                         )
                 );
-
             } else {
-
                 throw error;
-
             }
         }
     }
 }
-
-/*
-==================================================
-GERAR MATÉRIA
-==================================================
-*/
-
+// ==================================================
+// GERAR MATÉRIA
+// ==================================================
 async function gerarMateria(titulo, texto) {
-
     const prompt = `
-
 Você é o assistente de redação jornalística do M1NewsTV.
 
 Sua função é analisar uma matéria de fonte externa e criar
@@ -569,11 +513,9 @@ ${texto}
 
 `;
 
-    /*
-    ==================================================
-    PRIMEIRA GERAÇÃO
-    ==================================================
-    */
+    // ==================================================
+    // PRIMEIRA GERAÇÃO
+    // ==================================================
 
     const response =
         await chamarGemini(prompt);
@@ -584,17 +526,11 @@ ${texto}
     let resultado;
 
     try {
-
         resultado =
             JSON.parse(textoResposta);
-
     } catch (error) {
-
-        console.error(
-            "Resposta recebida da IA:"
-        );
-
-        console.error(
+        logger.error(
+            "A IA não retornou um JSON válido.",
             textoResposta
         );
 
@@ -603,11 +539,9 @@ ${texto}
         );
     }
 
-    /*
-    ==================================================
-    GARANTIR E NORMALIZAR CAMPOS
-    ==================================================
-    */
+    // ==================================================
+    // GARANTIR E NORMALIZAR CAMPOS
+    // ==================================================
 
     resultado.titulo =
         String(resultado.titulo || "").trim();
@@ -638,28 +572,22 @@ ${texto}
         resultado.categorias = [];
     }
 
-    /*
-    ==================================================
-    VERIFICAR ALT TEXT
-    ==================================================
-    */
+    // ==================================================
+    // VERIFICAR ALT TEXT
+    // ==================================================
 
-    console.log(
-        "ALT recebido na primeira geração:",
-        resultado.alt_text || "Nenhum"
+    logger.info(
+        `ALT recebido na primeira geração: ${resultado.alt_text || "Nenhum"}`
     );
 
-    /*
-    ==================================================
-    SE A IA NÃO GEROU ALT,
-    FAZER UMA SEGUNDA CHAMADA
-    ==================================================
-    */
+    // ==================================================
+    // SE A IA NÃO GEROU ALT,
+    // FAZER UMA SEGUNDA CHAMADA
+    // ==================================================
 
     if (!resultado.alt_text) {
-
-        console.log(
-            "ALT text não foi gerado na primeira resposta."
+        logger.warn(
+            "ALT text não foi gerado na primeira resposta. Solicitando novamente..."
         );
 
         resultado.alt_text =
@@ -668,36 +596,29 @@ ${texto}
                 texto
             );
 
-        console.log(
-            "ALT após segunda tentativa:",
-            resultado.alt_text || "Nenhum"
+        logger.info(
+            `ALT após segunda tentativa: ${resultado.alt_text || "Nenhum"}`
         );
     }
 
-    /*
-    ==================================================
-    ÚLTIMO FALLBACK
-    ==================================================
-    */
+    // ==================================================
+    // ÚLTIMO FALLBACK
+    // ==================================================
 
     if (!resultado.alt_text) {
-
-        console.warn(
-            "Não foi possível gerar ALT text pela IA."
+        logger.warn(
+            "Não foi possível gerar ALT text pela IA. Utilizando fallback."
         );
 
         resultado.alt_text =
             resultado.titulo ||
             titulo ||
             "Imagem relacionada à notícia";
-
     }
 
-    /*
-    ==================================================
-    VERIFICAR TÍTULO
-    ==================================================
-    */
+    // ==================================================
+    // VERIFICAR TÍTULO
+    // ==================================================
 
     const tituloOriginalNormalizado =
         normalizarTitulo(titulo);
@@ -705,28 +626,20 @@ ${texto}
     const tituloGeradoNormalizado =
         normalizarTitulo(resultado.titulo);
 
-    /*
-    ==================================================
-    SE O TÍTULO FOR IGUAL,
-    PEDIR OUTRO PARA A IA
-    ==================================================
-    */
+    // ==================================================
+    // SE O TÍTULO FOR IGUAL,
+    // PEDIR OUTRO PARA A IA
+    // ==================================================
 
     if (
         tituloOriginalNormalizado ===
         tituloGeradoNormalizado
     ) {
-
-        console.log(
-            "A IA gerou um título igual ao original."
-        );
-
-        console.log(
-            "Solicitando um novo título..."
+        logger.warn(
+            "A IA gerou um título igual ao original. Solicitando um novo título..."
         );
 
         const promptNovoTitulo = `
-
 Você é editor de títulos jornalísticos do M1NewsTV.
 
 Crie UM NOVO título jornalístico para a matéria abaixo.
@@ -781,19 +694,13 @@ ${texto}
         let novoTitulo;
 
         try {
-
             novoTitulo =
                 JSON.parse(
                     textoNovoTitulo
                 );
-
         } catch (error) {
-
-            console.error(
-                "Resposta recebida ao solicitar novo título:"
-            );
-
-            console.error(
+            logger.error(
+                "A IA não retornou um novo título válido.",
                 textoNovoTitulo
             );
 
@@ -807,17 +714,14 @@ ${texto}
                 novoTitulo.titulo
             );
 
-        /*
-        ==============================================
-        SEGUNDA PROTEÇÃO
-        ==============================================
-        */
+        // ==============================================
+        // SEGUNDA PROTEÇÃO
+        // ==============================================
 
         if (
             novoTituloNormalizado ===
             tituloOriginalNormalizado
         ) {
-
             throw new Error(
                 "A IA não conseguiu gerar um título diferente do título original."
             );
@@ -826,99 +730,69 @@ ${texto}
         resultado.titulo =
             novoTitulo.titulo;
 
-        console.log(
-            "Novo título gerado com sucesso."
+        logger.info(
+            `Novo título gerado: ${resultado.titulo}`
         );
     }
 
-    /*
-    ==================================================
-    GARANTIR QUE NÃO EXISTE CONTEÚDO GERADO PELA IA
-    ==================================================
-    */
+    // ==================================================
+    // GARANTIR QUE NÃO EXISTE CONTEÚDO GERADO PELA IA
+    // ==================================================
 
     delete resultado.conteudo;
 
-    /*
-    ==================================================
-    GARANTIR ALT TEXT NOVAMENTE
-    ==================================================
-    */
+    // ==================================================
+    // GARANTIR ALT TEXT NOVAMENTE
+    // ==================================================
 
     if (
         !resultado.alt_text ||
         resultado.alt_text.trim().length === 0
     ) {
-
         resultado.alt_text =
             resultado.titulo ||
             titulo ||
             "Imagem relacionada à notícia";
-
     }
 
-    /*
-    ==================================================
-    LOG FINAL
-    ==================================================
-    */
+    // ==================================================
+    // LOG FINAL
+    // ==================================================
 
-    console.log(
-        "========================================"
+    logger.info(
+        `Matéria processada pela IA: ${resultado.titulo}`
     );
 
-    console.log(
-        "Resultado final da IA:"
+    logger.info(
+        `Tags: ${resultado.tags.join(", ")}`
     );
 
-    console.log(
-        "Título:",
-        resultado.titulo
+    logger.info(
+        `Categorias: ${resultado.categorias.join(", ")}`
     );
 
-    console.log(
-        "Tags:",
-        resultado.tags
+    logger.info(
+        `Frase-chave: ${resultado.frase_chave}`
     );
 
-    console.log(
-        "Categorias:",
-        resultado.categorias
+    logger.info(
+        `Meta descrição: ${resultado.meta_descricao}`
     );
 
-    console.log(
-        "Frase-chave:",
-        resultado.frase_chave
+    logger.info(
+        `ALT text: ${resultado.alt_text}`
     );
 
-    console.log(
-        "Meta descrição:",
-        resultado.meta_descricao
-    );
-
-    console.log(
-        "ALT text:",
-        resultado.alt_text
-    );
-
-    console.log(
-        "========================================"
-    );
-
-    /*
-    ==================================================
-    RETORNAR RESULTADO
-    ==================================================
-    */
+    // ==================================================
+    // RETORNAR RESULTADO
+    // ==================================================
 
     return resultado;
 }
 
-/*
-==================================================
-EXPORTAR
-==================================================
-*/
+// ==================================================
+// EXPORTAR
+// ==================================================
 
 module.exports = {
     gerarMateria

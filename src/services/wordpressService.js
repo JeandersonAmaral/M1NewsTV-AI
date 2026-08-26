@@ -3,13 +3,13 @@ const WORDPRESS_USER = process.env.WORDPRESS_USER;
 const WORDPRESS_APP_PASSWORD = process.env.WORDPRESS_APP_PASSWORD;
 
 const sharp = require("sharp");
+const logger = require("../utils/logger");
 
 // ========================================
 // AUTENTICAÇÃO
 // ========================================
 
 function getAuthHeader() {
-
     const credentials =
         `${WORDPRESS_USER}:${WORDPRESS_APP_PASSWORD}`;
 
@@ -26,7 +26,6 @@ function getAuthHeader() {
 // ========================================
 
 function getJsonHeaders() {
-
     return {
         "Content-Type": "application/json",
         "Authorization": getAuthHeader()
@@ -38,7 +37,6 @@ function getJsonHeaders() {
 // ========================================
 
 async function obterOuCriarTag(nome) {
-
     const headers = getJsonHeaders();
 
     const nomeLimpo = nome.trim();
@@ -60,12 +58,10 @@ async function obterOuCriarTag(nome) {
     );
 
     if (!busca.ok) {
-
         throw new Error(
             "Não foi possível buscar a tag: " +
             nomeLimpo
         );
-
     }
 
     const tags = await busca.json();
@@ -105,14 +101,12 @@ async function obterOuCriarTag(nome) {
     );
 
     if (buscaSlug.ok) {
-
         const tagsSlug =
             await buscaSlug.json();
 
         if (tagsSlug.length > 0) {
             return tagsSlug[0].id;
         }
-
     }
 
     // ========================================
@@ -139,22 +133,18 @@ async function obterOuCriarTag(nome) {
     // ========================================
 
     if (!novaTag.ok) {
-
         if (
             data.code === "term_exists" &&
             data.data &&
             data.data.term_id
         ) {
-
             return data.data.term_id;
-
         }
 
         throw new Error(
             data.message ||
             `Não foi possível criar a tag: ${nomeLimpo}`
         );
-
     }
 
     return data.id;
@@ -165,7 +155,6 @@ async function obterOuCriarTag(nome) {
 // ========================================
 
 async function obterCategoria(nome) {
-
     const response = await fetch(
         `${WORDPRESS_URL}/wp-json/wp/v2/categories?search=${encodeURIComponent(nome)}&per_page=100`,
         {
@@ -178,12 +167,10 @@ async function obterCategoria(nome) {
     );
 
     if (!response.ok) {
-
         throw new Error(
             "Não foi possível buscar a categoria: " +
             nome
         );
-
     }
 
     const categorias =
@@ -197,8 +184,7 @@ async function obterCategoria(nome) {
         );
 
     if (!categoria) {
-
-        console.warn(
+        logger.warn(
             `Categoria não encontrada no WordPress: ${nome}`
         );
 
@@ -213,26 +199,17 @@ async function obterCategoria(nome) {
 // ========================================
 
 async function baixarImagem(url) {
-
     if (!url) {
         return null;
     }
 
-    console.log(
-        "Baixando imagem:",
-        url
-    );
-
     try {
-
         const response =
             await fetch(url);
 
         if (!response.ok) {
-
-            console.warn(
-                "Não foi possível baixar a imagem. Status:",
-                response.status
+            logger.warn(
+                `Não foi possível baixar a imagem. Status: ${response.status}`
             );
 
             return null;
@@ -252,21 +229,13 @@ async function baixarImagem(url) {
         // WEBP
         // ========================================
         // Se já for WebP, NÃO ALTERA A IMAGEM.
-        // Mantém o buffer original.
         // ========================================
 
         if (
-            contentType.toLowerCase().includes("image/webp")
+            contentType
+                .toLowerCase()
+                .includes("image/webp")
         ) {
-
-            console.log(
-                "Imagem já está em WebP."
-            );
-
-            console.log(
-                "Imagem WebP original será enviada sem alterações."
-            );
-
             return {
                 buffer,
                 contentType: "image/webp",
@@ -283,12 +252,8 @@ async function baixarImagem(url) {
         // a proporção.
         // ========================================
 
-        console.log(
-            "Imagem não é WebP."
-        );
-
-        console.log(
-            "Convertendo e redimensionando para 1080px de largura..."
+        logger.info(
+            "Convertendo imagem para WebP e redimensionando para 1080px."
         );
 
         const imagemProcessada =
@@ -312,13 +277,8 @@ async function baixarImagem(url) {
             await sharp(imagemProcessada)
                 .metadata();
 
-        console.log(
-            "Dimensões finais:",
-            `${metadata.width}x${metadata.height}`
-        );
-
-        console.log(
-            "Formato final: WebP"
+        logger.info(
+            `Imagem processada: ${metadata.width}x${metadata.height} WebP`
         );
 
         return {
@@ -331,10 +291,9 @@ async function baixarImagem(url) {
         };
 
     } catch (error) {
-
-        console.error(
+        logger.error(
             "Erro ao baixar/processar imagem:",
-            error
+            error.message
         );
 
         return null;
@@ -351,13 +310,7 @@ async function enviarImagemParaWordPress(
     tags,
     altTexto
 ) {
-
     if (!imagemUrl) {
-
-        console.log(
-            "Nenhuma imagem para enviar."
-        );
-
         return null;
     }
 
@@ -366,35 +319,6 @@ async function enviarImagemParaWordPress(
 
     if (!imagem) {
         return null;
-    }
-
-    // ========================================
-    // DIAGNÓSTICO DO ARQUIVO
-    // ========================================
-
-    console.log(
-        "Content-Type da imagem:",
-        imagem.contentType
-    );
-
-    console.log(
-        "Extensão da imagem:",
-        imagem.extensao
-    );
-
-    console.log(
-        "Tamanho da imagem:",
-        imagem.buffer.length,
-        "bytes"
-    );
-
-    if (imagem.largura && imagem.altura) {
-
-        console.log(
-            "Dimensões da imagem:",
-            `${imagem.largura}x${imagem.altura}`
-        );
-
     }
 
     // ========================================
@@ -434,16 +358,6 @@ async function enviarImagemParaWordPress(
     const filename =
         `${nomeArquivo || "imagem-materia"}.${imagem.extensao}`;
 
-    console.log(
-        "Nome do arquivo:",
-        filename
-    );
-
-    console.log(
-        "Enviando imagem para WordPress:",
-        filename
-    );
-
     // ========================================
     // ENVIAR ARQUIVO
     // ========================================
@@ -452,19 +366,14 @@ async function enviarImagemParaWordPress(
         `${WORDPRESS_URL}/wp-json/wp/v2/media`,
         {
             method: "POST",
-
             headers: {
-
                 "Authorization":
                     getAuthHeader(),
-
                 "Content-Type":
                     imagem.contentType,
-
                 "Content-Disposition":
                     `attachment; filename="${filename}"`
             },
-
             body: imagem.buffer
         }
     );
@@ -479,35 +388,16 @@ async function enviarImagemParaWordPress(
     let data;
 
     try {
-
         data =
             JSON.parse(responseText);
-
     } catch (error) {
-
-        console.error(
-            "WordPress não retornou JSON ao enviar a imagem."
-        );
-
-        console.error(
-            "Status HTTP:",
-            response.status
-        );
-
-        console.error(
-            "Content-Type:",
-            response.headers.get("content-type") || ""
-        );
-
-        console.error(
-            "Resposta recebida:",
-            responseText.substring(0, 500)
+        logger.error(
+            `WordPress retornou resposta inválida ao enviar a imagem. Status: ${response.status}`
         );
 
         throw new Error(
             `WordPress retornou uma resposta inválida ao enviar a imagem. Status: ${response.status}`
         );
-
     }
 
     // ========================================
@@ -515,9 +405,8 @@ async function enviarImagemParaWordPress(
     // ========================================
 
     if (!response.ok) {
-
-        console.error(
-            "Erro ao enviar imagem:",
+        logger.error(
+            "Erro ao enviar imagem para o WordPress:",
             data
         );
 
@@ -525,43 +414,17 @@ async function enviarImagemParaWordPress(
             data.message ||
             "Não foi possível enviar a imagem para o WordPress."
         );
-
     }
 
-    console.log(
-        "Imagem enviada com sucesso!"
-    );
-
-    console.log(
-        "ID da imagem:",
-        data.id
+    logger.info(
+        `Imagem enviada para o WordPress: ${filename}`
     );
 
     // ========================================
     // ATUALIZAR METADADOS DA IMAGEM
     // ========================================
 
-    // TÍTULO, LEGENDA E DESCRIÇÃO = TAGS
-    // ALT = TEXTO GERADO PELA IA
-
-    // ========================================
-
-    console.log(
-        "Atualizando metadados da imagem..."
-    );
-
-    console.log(
-        "Tags utilizadas na imagem:",
-        tagsTexto
-    );
-
-    console.log(
-        "ALT gerado pela IA:",
-        altTexto
-    );
-
     const metadados = {
-
         title:
             tagsTexto || "Imagem da matéria",
 
@@ -579,10 +442,8 @@ async function enviarImagemParaWordPress(
         `${WORDPRESS_URL}/wp-json/wp/v2/media/${data.id}`,
         {
             method: "POST",
-
             headers:
                 getJsonHeaders(),
-
             body:
                 JSON.stringify(metadados)
         }
@@ -598,35 +459,20 @@ async function enviarImagemParaWordPress(
     let imagemAtualizada;
 
     try {
-
         imagemAtualizada =
             JSON.parse(atualizarText);
-
     } catch (error) {
-
-        console.error(
-            "WordPress retornou JSON inválido ao atualizar os metadados."
-        );
-
-        console.error(
-            "Status HTTP:",
-            atualizar.status
-        );
-
-        console.error(
-            "Resposta:",
-            atualizarText.substring(0, 500)
+        logger.error(
+            `WordPress retornou resposta inválida ao atualizar metadados. Status: ${atualizar.status}`
         );
 
         throw new Error(
             `WordPress retornou uma resposta inválida ao atualizar os metadados. Status: ${atualizar.status}`
         );
-
     }
 
     if (!atualizar.ok) {
-
-        console.error(
+        logger.error(
             "Erro ao atualizar metadados da imagem:",
             imagemAtualizada
         );
@@ -635,32 +481,7 @@ async function enviarImagemParaWordPress(
             imagemAtualizada?.message ||
             "A imagem foi enviada, mas não foi possível atualizar seus metadados."
         );
-
     }
-
-    console.log(
-        "Metadados da imagem atualizados!"
-    );
-
-    console.log(
-        "Título:",
-        tagsTexto
-    );
-
-    console.log(
-        "ALT:",
-        altTexto
-    );
-
-    console.log(
-        "Legenda:",
-        tagsTexto
-    );
-
-    console.log(
-        "Descrição:",
-        tagsTexto
-    );
 
     return imagemAtualizada;
 }
@@ -670,26 +491,11 @@ async function enviarImagemParaWordPress(
 // ========================================
 
 async function criarRascunho(materia) {
-
     const headers =
         getJsonHeaders();
 
-    console.log(
-        "========================================"
-    );
-
-    console.log(
-        "Preparando rascunho..."
-    );
-
-    console.log(
-        "Título:",
-        materia.titulo
-    );
-
-    console.log(
-        "Imagem:",
-        materia.imagem
+    logger.info(
+        `Criando rascunho: ${materia.titulo}`
     );
 
     // ========================================
@@ -699,9 +505,7 @@ async function criarRascunho(materia) {
     const tagIds = [];
 
     if (Array.isArray(materia.tags)) {
-
         for (const tag of materia.tags) {
-
             if (!tag || !tag.trim()) {
                 continue;
             }
@@ -714,7 +518,6 @@ async function criarRascunho(materia) {
             if (id) {
                 tagIds.push(id);
             }
-
         }
     }
 
@@ -725,12 +528,10 @@ async function criarRascunho(materia) {
     const categoriaIds = [];
 
     if (Array.isArray(materia.categorias)) {
-
         for (
             const categoria
             of materia.categorias
         ) {
-
             if (
                 !categoria ||
                 !categoria.trim()
@@ -756,9 +557,7 @@ async function criarRascunho(materia) {
     let imagemId = null;
 
     if (materia.imagem) {
-
         try {
-
             const imagemWordPress =
                 await enviarImagemParaWordPress(
                     materia.imagem,
@@ -768,14 +567,12 @@ async function criarRascunho(materia) {
                 );
 
             if (imagemWordPress) {
-
                 imagemId =
                     imagemWordPress.id;
             }
 
         } catch (error) {
-
-            console.error(
+            logger.error(
                 "Erro ao enviar imagem:",
                 error.message
             );
@@ -790,7 +587,6 @@ async function criarRascunho(materia) {
     // ========================================
 
     const postData = {
-
         title:
             materia.titulo || "",
 
@@ -811,7 +607,6 @@ async function criarRascunho(materia) {
         // ====================================
 
         meta: {
-
             _yoast_wpseo_focuskw:
                 materia.frase_chave || "",
 
@@ -825,7 +620,6 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (tagIds.length > 0) {
-
         postData.tags =
             tagIds;
     }
@@ -835,7 +629,6 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (categoriaIds.length > 0) {
-
         postData.categories =
             categoriaIds;
     }
@@ -845,65 +638,23 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (imagemId) {
-
         postData.featured_media =
             imagemId;
-
-        console.log(
-            "Imagem destacada definida:",
-            imagemId
-        );
     }
-
-    // ========================================
-    // LOGS
-    // ========================================
-
-    console.log(
-        "Tags:",
-        tagIds
-    );
-
-    console.log(
-        "Categorias:",
-        categoriaIds
-    );
-
-    console.log(
-        "Imagem destacada:",
-        imagemId
-    );
-
-    console.log(
-        "Frase-chave:",
-        materia.frase_chave
-    );
-
-    console.log(
-        "Meta descrição:",
-        materia.meta_descricao
-    );
-
-    console.log(
-        "ALT da imagem:",
-        materia.alt_text
-    );
 
     // ========================================
     // ENVIAR POST
     // ========================================
 
-    console.log(
-        "Enviando post para WordPress..."
+    logger.info(
+        "Enviando rascunho para o WordPress..."
     );
 
     const response = await fetch(
         `${WORDPRESS_URL}/wp-json/wp/v2/posts`,
         {
             method: "POST",
-
             headers,
-
             body:
                 JSON.stringify(postData)
         }
@@ -917,9 +668,8 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (!response.ok) {
-
-        console.error(
-            "Resposta do WordPress:",
+        logger.error(
+            "WordPress recusou a criação do rascunho:",
             data
         );
 
@@ -927,38 +677,14 @@ async function criarRascunho(materia) {
             data.message ||
             "Não foi possível criar o rascunho no WordPress."
         );
-
     }
 
     // ========================================
     // SUCESSO
     // ========================================
 
-    console.log(
-        "========================================"
-    );
-
-    console.log(
-        "Rascunho criado com sucesso!"
-    );
-
-    console.log(
-        "ID:",
-        data.id
-    );
-
-    console.log(
-        "Link:",
-        data.link
-    );
-
-    console.log(
-        "Imagem destacada:",
-        imagemId
-    );
-
-    console.log(
-        "========================================"
+    logger.info(
+        `Rascunho criado com sucesso. ID: ${data.id}`
     );
 
     return data;
@@ -971,3 +697,4 @@ async function criarRascunho(materia) {
 module.exports = {
     criarRascunho
 };
+

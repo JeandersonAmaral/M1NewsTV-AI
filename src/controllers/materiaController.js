@@ -1,19 +1,11 @@
-const { gerarMateria: gerarMateriaIA } =
-    require("../services/aiService");
-
-const { extrairMateria } =
-    require("../services/articleExtractor");
-
-const { criarRascunho: criarRascunhoWordPress } =
-    require("../services/wordpressService");
-
-const { validarUrl } =
-    require("../utils/urlValidator");
-
+const { gerarMateria: gerarMateriaIA } = require("../services/aiService");
+const { extrairMateria } = require("../services/articleExtractor");
+const { criarRascunho: criarRascunhoWordPress } = require("../services/wordpressService");
+const { validarUrl } = require("../utils/urlValidator");
+const logger = require("../utils/logger");
 // ========================================
 // IDENTIFICAR FONTE
 // ========================================
-
 function identificarFonte(url) {
     try {
         const dominio =
@@ -35,16 +27,13 @@ function identificarFonte(url) {
         }
 
         return dominio;
-
     } catch (error) {
         return "Fonte não identificada";
     }
 }
-
 // ========================================
 // MONTAR CONTEÚDO FINAL
 // ========================================
-
 function montarConteudoFinal(
     subtitulo,
     corpoOriginal,
@@ -62,13 +51,10 @@ function montarConteudoFinal(
         fonteHTML
     ].join("\n\n");
 }
-
 // ========================================
 // GERAR MATÉRIA
 // ========================================
-
 async function gerarMateria(req, res) {
-
     const { url } = req.body;
 
     // ========================================
@@ -83,108 +69,60 @@ async function gerarMateria(req, res) {
         });
     }
 
-    console.log(
-        "URL recebida:",
-        url
-    );
-
     try {
-
         // ========================================
         // VALIDAR URL CONTRA SSRF
         // ========================================
-
         validarUrl(url);
-
         // ========================================
         // 1. EXTRAIR MATÉRIA ORIGINAL
         // ========================================
-
+        logger.info(
+            "Extraindo matéria da fonte..."
+        );
         const materiaOriginal =
             await extrairMateria(url);
-
-        console.log(
-            "Título encontrado:",
-            materiaOriginal.titulo
-        );
-
-        console.log(
-            "Imagem encontrada:",
-            materiaOriginal.imagem || "Nenhuma"
-        );
-
         // ========================================
         // 2. IDENTIFICAR FONTE
         // ========================================
-
         const fonte =
             identificarFonte(url);
-
-        console.log(
-            "Fonte identificada:",
-            fonte
-        );
-
         // ========================================
         // 3. ENVIAR INFORMAÇÕES PARA A IA
         // ========================================
-
-        console.log(
-            "Enviando informações para a IA..."
+        logger.info(
+            "Gerando informações editoriais com IA..."
         );
-
         const materiaGerada =
             await gerarMateriaIA(
                 materiaOriginal.titulo,
                 materiaOriginal.texto
             );
-
-        console.log(
-            "Informações geradas pela IA."
-        );
-
         // ========================================
         // 4. MONTAR CORPO FINAL
         // ========================================
-
         const conteudoFinal =
             montarConteudoFinal(
                 materiaGerada.subtitulo,
                 materiaOriginal.html,
                 fonte
             );
-
         // ========================================
         // 5. ADICIONAR CONTEÚDO AO RESULTADO
         // ========================================
-
         materiaGerada.conteudo =
             conteudoFinal;
-
         // ========================================
         // 5.1 MANTER IMAGEM ORIGINAL
         // ========================================
-
         materiaGerada.imagem =
             materiaOriginal.imagem || null;
-
-        console.log(
-            "Imagem mantida para o frontend:",
-            materiaGerada.imagem || "Nenhuma"
-        );
-
-        // ========================================
-        // 5.2 MOSTRAR ALT GERADO PELA IA
-        // ========================================
-
-        console.log(
-            "ALT gerado pela IA:",
-            materiaGerada.alt_text || "Nenhum"
-        );
-
         // ========================================
         // 6. RETORNAR PARA A INTERFACE
         // ========================================
+        logger.info(
+            `Matéria processada: ${materiaGerada.titulo}`
+        );
 
         return res.json({
             sucesso: true,
@@ -194,8 +132,8 @@ async function gerarMateria(req, res) {
 
     } catch (error) {
 
-        console.error(
-            "Erro:",
+        logger.error(
+            "Erro ao processar matéria:",
             error
         );
 
@@ -207,13 +145,10 @@ async function gerarMateria(req, res) {
         });
     }
 }
-
 // ========================================
 // ENVIAR MATÉRIA PARA RASCUNHO
 // ========================================
-
 async function criarRascunho(req, res) {
-
     const {
         titulo,
         conteudo,
@@ -226,11 +161,9 @@ async function criarRascunho(req, res) {
         imagem,
         alt_text
     } = req.body;
-
     // ========================================
     // VALIDAR CAMPOS
     // ========================================
-
     if (!titulo) {
         return res.status(400).json({
             sucesso: false,
@@ -246,139 +179,73 @@ async function criarRascunho(req, res) {
                 "O conteúdo da matéria está vazio."
         });
     }
-
-    console.log(
-        "========================================"
-    );
-
-    console.log(
-        "Enviando matéria para o WordPress..."
-    );
-
-    console.log(
-        "Título:",
-        titulo
-    );
-
-    console.log(
-        "Slug:",
-        slug
-    );
-
-    console.log(
-        "Tags:",
-        tags
-    );
-
-    console.log(
-        "Categorias:",
-        categorias
-    );
-
-    console.log(
-        "Imagem recebida:",
-        imagem || "Nenhuma"
-    );
-
-    console.log(
-        "ALT recebido:",
-        alt_text || "Nenhum"
-    );
-
     // ========================================
     // CRIAR RASCUNHO
     // ========================================
-
     try {
+
+        logger.info(
+            `Enviando matéria para o WordPress: ${titulo}`
+        );
 
         const resultado =
             await criarRascunhoWordPress({
-            titulo,
-            conteudo,
-            descricao,
-            slug,
-            tags,
-            categorias,
-            frase_chave,
-            meta_descricao,
-            imagem,
-            alt_text
-        });
-
-        // ========================================
-        // RESULTADO
-        // ========================================
-
-        console.log(
-            "Rascunho criado com sucesso!"
-        );
-
-        console.log(
-            "ID:",
-            resultado.id
-        );
-
-        console.log(
-            "Link:",
-            resultado.link
-        );
-
-        console.log(
-            "Status:",
-            resultado.status
-        );
-
-        console.log(
-            "========================================"
-        );
-
+                titulo,
+                conteudo,
+                descricao,
+                slug,
+                tags,
+                categorias,
+                frase_chave,
+                meta_descricao,
+                imagem,
+                alt_text
+            });
         // ========================================
         // RETORNAR PARA O FRONTEND
         // ========================================
+        logger.info(
+            `Rascunho criado no WordPress: ID ${resultado.id}`
+        );
 
         return res.json({
-
             sucesso: true,
-
             id:
                 resultado.id,
-
             link:
                 resultado.link,
-
             status:
                 resultado.status
         });
 
     } catch (error) {
 
-        console.error(
+        logger.error(
             "Erro ao criar rascunho:",
             error
         );
 
         return res.status(500).json({
-
             sucesso: false,
-
             mensagem:
                 error.message ||
                 "Não foi possível criar o rascunho no WordPress."
         });
     }
 }
-
 // ========================================
 // TESTE WORDPRESS
 // ========================================
-
 async function testarWordPress(req, res) {
 
     try {
 
+        logger.info(
+            "Executando teste de integração com WordPress..."
+        );
+
         const resultado =
             await criarRascunhoWordPress({
-
                 titulo:
                     "Teste M1NewsTV AI",
 
@@ -392,44 +259,40 @@ async function testarWordPress(req, res) {
                     "teste-m1newstv-ai"
             });
 
+        logger.info(
+            `Teste do WordPress concluído: ID ${resultado.id}`
+        );
+
         return res.json({
-
             sucesso: true,
-
             id:
                 resultado.id,
-
             link:
                 resultado.link,
-
             status:
                 resultado.status
         });
 
     } catch (error) {
 
-        console.error(error);
+        logger.error(
+            "Erro no teste do WordPress:",
+            error
+        );
 
         return res.status(500).json({
-
             sucesso: false,
-
             mensagem:
                 error.message
         });
     }
 }
-
 // ========================================
 // EXPORTAR
 // ========================================
-
 module.exports = {
-
     gerarMateria,
-
     criarRascunho,
-
     testarWordPress
-
 };
+

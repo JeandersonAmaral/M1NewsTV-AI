@@ -12,21 +12,17 @@ function validarUrl(url) {
     } catch (error) {
         throw new Error("URL inválida.");
     }
-
     // ========================================
     // PROTOCOLO
     // ========================================
-
     if (!["http:", "https:"].includes(parsed.protocol)) {
         throw new Error(
             "Apenas URLs HTTP e HTTPS são permitidas."
         );
     }
-
     // ========================================
     // HOSTNAME
     // ========================================
-
     const hostname = parsed.hostname
         .toLowerCase()
         .replace(/\.$/, "");
@@ -34,11 +30,9 @@ function validarUrl(url) {
     if (!hostname) {
         throw new Error("URL sem domínio válido.");
     }
-
     // ========================================
     // LOCALHOST
     // ========================================
-
     if (
         hostname === "localhost" ||
         hostname.endsWith(".localhost")
@@ -47,11 +41,9 @@ function validarUrl(url) {
             "URLs para localhost não são permitidas."
         );
     }
-
     // ========================================
     // IP DIRETO
     // ========================================
-
     if (net.isIP(hostname)) {
 
         // IPv4
@@ -115,7 +107,6 @@ function validarUrl(url) {
                 );
             }
         }
-
         // IPv6
         if (net.isIPv6(hostname)) {
 
@@ -127,7 +118,6 @@ function validarUrl(url) {
                     "IPs internos não são permitidos."
                 );
             }
-
             // IPv6 link-local
             if (
                 ipv6.startsWith("fe8") ||
@@ -139,7 +129,6 @@ function validarUrl(url) {
                     "IPs internos não são permitidos."
                 );
             }
-
             // IPv6 privado/unique local
             if (ipv6.startsWith("fc") || ipv6.startsWith("fd")) {
                 throw new Error(
