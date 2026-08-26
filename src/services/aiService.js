@@ -4,7 +4,6 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
-
 /*
 ==================================================
 NORMALIZAR TÍTULO
@@ -12,7 +11,6 @@ NORMALIZAR TÍTULO
 */
 
 function normalizarTitulo(texto) {
-
     return String(texto || "")
         .toLowerCase()
         .normalize("NFD")
@@ -20,9 +18,190 @@ function normalizarTitulo(texto) {
         .replace(/[^\w\s]/g, "")
         .replace(/\s+/g, " ")
         .trim();
-
 }
 
+/*
+==================================================
+LIMPAR RESPOSTA JSON DO GEMINI
+==================================================
+*/
+
+function limparJson(texto) {
+    let resposta = String(texto || "").trim();
+
+    // Remove possíveis blocos Markdown
+    resposta = resposta
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+
+    return resposta;
+}
+
+/*
+==================================================
+GERAR ALT TEXT ESPECÍFICO
+==================================================
+*/
+
+async function gerarAltText(titulo, texto) {
+
+    const promptAlt = `
+Você é um editor de acessibilidade e SEO do M1NewsTV.
+
+Crie um texto alternativo (alt text) para a imagem principal
+de uma matéria jornalística.
+
+REGRAS:
+
+- Escreva em português brasileiro.
+- Seja curto, natural e objetivo.
+- Descreva o que a imagem representa com base no contexto
+  disponível da matéria.
+- Não invente pessoas, objetos, locais ou acontecimentos.
+- Não utilize hashtags.
+- Não utilize emojis.
+- Não utilize aspas.
+- Não escreva "Imagem da matéria".
+- Não escreva "Foto da matéria".
+- Não escreva explicações.
+- Retorne SOMENTE o texto alternativo.
+- O texto deve ser adequado para acessibilidade.
+
+TÍTULO DA MATÉRIA:
+
+${titulo}
+
+CONTEÚDO DA MATÉRIA:
+
+${texto}
+`;
+
+    try {
+
+        console.log(
+            "Gerando ALT text específico..."
+        );
+
+        const response =
+            await chamarGemini(promptAlt);
+
+        const altText =
+            String(response.text || "")
+                .trim()
+                .replace(/^["']|["']$/g, "");
+
+        if (!altText) {
+            console.warn(
+                "Gemini não retornou ALT text."
+            );
+
+            return "";
+        }
+
+        console.log(
+            "ALT text gerado:",
+            altText
+        );
+
+        return altText;
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao gerar ALT text:",
+            error.message
+        );
+
+        return "";
+    }
+}
+
+/*
+==================================================
+FUNÇÃO PARA CHAMAR O GEMINI
+==================================================
+*/
+
+async function chamarGemini(promptAtual) {
+
+    let response;
+
+    const maxTentativas = 3;
+
+    for (
+        let tentativa = 1;
+        tentativa <= maxTentativas;
+        tentativa++
+    ) {
+
+        try {
+
+            console.log(
+                `Tentativa ${tentativa}/${maxTentativas} enviando para o Gemini...`
+            );
+
+            response =
+                await ai.models.generateContent({
+
+                    model: "gemini-3.6-flash",
+
+                    contents: promptAtual,
+
+                    config: {
+                        responseMimeType: "application/json"
+                    }
+
+                });
+
+            console.log(
+                "Gemini respondeu com sucesso."
+            );
+
+            return response;
+
+        } catch (error) {
+
+            console.error(
+                `Erro na tentativa ${tentativa}:`,
+                error.status || error.message
+            );
+
+            /*
+            ==========================================
+            RETRY PARA ERRO 503
+            ==========================================
+            */
+
+            if (
+                error.status === 503 &&
+                tentativa < maxTentativas
+            ) {
+
+                const espera =
+                    tentativa * 5000;
+
+                console.log(
+                    `Gemini indisponível. Tentando novamente em ${espera / 1000} segundos...`
+                );
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            espera
+                        )
+                );
+
+            } else {
+
+                throw error;
+
+            }
+        }
+    }
+}
 
 /*
 ==================================================
@@ -56,7 +235,8 @@ Sua função é criar SOMENTE:
 - categorias;
 - frase-chave foco;
 - slug;
-- meta descrição.
+- meta descrição;
+- texto alternativo da imagem (alt_text).
 
 A matéria será SEMPRE revisada por um jornalista/editor antes
 da publicação.
@@ -228,30 +408,6 @@ o conteúdo realmente justificar.
 
 A decisão final sobre as categorias será sempre do editor.
 
-Exemplo:
-
-Uma matéria sobre política em Maricá:
-
-[
-    "Maricá",
-    "Política"
-]
-
-Uma matéria sobre eleições em Maricá:
-
-[
-    "Maricá",
-    "Política",
-    "Eleições"
-]
-
-Uma matéria sobre Copa do Mundo:
-
-[
-    "Esporte",
-    "Copa do Mundo FIFA 2026"
-]
-
 ========================
 FRASE-CHAVE FOCO
 ========================
@@ -336,6 +492,40 @@ O campo "conteudo" NÃO deve existir na resposta.
 O corpo original será preservado pelo sistema separadamente.
 
 ========================
+TEXTO ALTERNATIVO DA IMAGEM
+========================
+
+Crie obrigatoriamente um campo "alt_text".
+
+O alt_text deve ser um texto alternativo curto,
+objetivo e descritivo para a imagem principal da matéria.
+
+O texto deve ser adequado para acessibilidade.
+
+Utilize somente informações presentes na matéria original
+ou diretamente relacionadas ao assunto apresentado.
+
+Não invente pessoas, objetos, locais ou acontecimentos.
+
+Não utilize hashtags.
+
+Não utilize emojis.
+
+Não utilize aspas.
+
+NÃO escreva:
+
+"Imagem da matéria"
+
+"Foto da matéria"
+
+"Imagem relacionada à matéria"
+
+O campo "alt_text" NÃO pode ficar vazio.
+
+O campo "alt_text" NÃO pode ser omitido.
+
+========================
 FORMATO DA RESPOSTA
 ========================
 
@@ -359,8 +549,11 @@ Use EXATAMENTE esta estrutura:
     "categorias": [],
     "frase_chave": "",
     "slug": "",
-    "meta_descricao": ""
+    "meta_descricao": "",
+    "alt_text": ""
 }
+
+O campo "alt_text" é OBRIGATÓRIO.
 
 ========================
 MATÉRIA ORIGINAL
@@ -376,89 +569,6 @@ ${texto}
 
 `;
 
-
-    /*
-    ==================================================
-    FUNÇÃO PARA CHAMAR O GEMINI
-    ==================================================
-    */
-
-    async function chamarGemini(promptAtual) {
-
-        let response;
-
-        const maxTentativas = 3;
-
-        for (
-            let tentativa = 1;
-            tentativa <= maxTentativas;
-            tentativa++
-        ) {
-
-            try {
-
-                console.log(
-                    `Tentativa ${tentativa}/${maxTentativas} enviando para o Gemini...`
-                );
-
-                response = await ai.models.generateContent({
-
-                    model: "gemini-3.6-flash",
-
-                    contents: promptAtual
-
-                });
-
-                console.log(
-                    "Gemini respondeu com sucesso."
-                );
-
-                return response;
-
-            } catch (error) {
-
-                console.error(
-                    `Erro na tentativa ${tentativa}:`,
-                    error.status || error.message
-                );
-
-
-                /*
-                ==========================================
-                RETRY PARA ERRO 503
-                ==========================================
-                */
-
-                if (
-                    error.status === 503 &&
-                    tentativa < maxTentativas
-                ) {
-
-                    const espera =
-                        tentativa * 5000;
-
-                    console.log(
-                        `Gemini indisponível. Tentando novamente em ${espera / 1000} segundos...`
-                    );
-
-                    await new Promise(
-                        resolve =>
-                            setTimeout(resolve, espera)
-                    );
-
-                } else {
-
-                    throw error;
-
-                }
-
-            }
-
-        }
-
-    }
-
-
     /*
     ==================================================
     PRIMEIRA GERAÇÃO
@@ -468,13 +578,10 @@ ${texto}
     const response =
         await chamarGemini(prompt);
 
-
     const textoResposta =
-        response.text.trim();
-
+        limparJson(response.text);
 
     let resultado;
-
 
     try {
 
@@ -494,9 +601,97 @@ ${texto}
         throw new Error(
             "A IA não retornou um JSON válido."
         );
-
     }
 
+    /*
+    ==================================================
+    GARANTIR E NORMALIZAR CAMPOS
+    ==================================================
+    */
+
+    resultado.titulo =
+        String(resultado.titulo || "").trim();
+
+    resultado.descricao =
+        String(resultado.descricao || "").trim();
+
+    resultado.subtitulo =
+        String(resultado.subtitulo || "").trim();
+
+    resultado.frase_chave =
+        String(resultado.frase_chave || "").trim();
+
+    resultado.slug =
+        String(resultado.slug || "").trim();
+
+    resultado.meta_descricao =
+        String(resultado.meta_descricao || "").trim();
+
+    resultado.alt_text =
+        String(resultado.alt_text || "").trim();
+
+    if (!Array.isArray(resultado.tags)) {
+        resultado.tags = [];
+    }
+
+    if (!Array.isArray(resultado.categorias)) {
+        resultado.categorias = [];
+    }
+
+    /*
+    ==================================================
+    VERIFICAR ALT TEXT
+    ==================================================
+    */
+
+    console.log(
+        "ALT recebido na primeira geração:",
+        resultado.alt_text || "Nenhum"
+    );
+
+    /*
+    ==================================================
+    SE A IA NÃO GEROU ALT,
+    FAZER UMA SEGUNDA CHAMADA
+    ==================================================
+    */
+
+    if (!resultado.alt_text) {
+
+        console.log(
+            "ALT text não foi gerado na primeira resposta."
+        );
+
+        resultado.alt_text =
+            await gerarAltText(
+                resultado.titulo || titulo,
+                texto
+            );
+
+        console.log(
+            "ALT após segunda tentativa:",
+            resultado.alt_text || "Nenhum"
+        );
+    }
+
+    /*
+    ==================================================
+    ÚLTIMO FALLBACK
+    ==================================================
+    */
+
+    if (!resultado.alt_text) {
+
+        console.warn(
+            "Não foi possível gerar ALT text pela IA."
+        );
+
+        resultado.alt_text =
+            resultado.titulo ||
+            titulo ||
+            "Imagem relacionada à notícia";
+
+    }
 
     /*
     ==================================================
@@ -509,7 +704,6 @@ ${texto}
 
     const tituloGeradoNormalizado =
         normalizarTitulo(resultado.titulo);
-
 
     /*
     ==================================================
@@ -530,7 +724,6 @@ ${texto}
         console.log(
             "Solicitando um novo título..."
         );
-
 
         const promptNovoTitulo = `
 
@@ -575,19 +768,17 @@ ${texto}
 
 `;
 
-
         const responseNovoTitulo =
             await chamarGemini(
                 promptNovoTitulo
             );
 
-
         const textoNovoTitulo =
-            responseNovoTitulo.text.trim();
-
+            limparJson(
+                responseNovoTitulo.text
+            );
 
         let novoTitulo;
-
 
         try {
 
@@ -609,15 +800,12 @@ ${texto}
             throw new Error(
                 "A IA não retornou um novo título válido."
             );
-
         }
-
 
         const novoTituloNormalizado =
             normalizarTitulo(
                 novoTitulo.titulo
             );
-
 
         /*
         ==============================================
@@ -633,20 +821,15 @@ ${texto}
             throw new Error(
                 "A IA não conseguiu gerar um título diferente do título original."
             );
-
         }
-
 
         resultado.titulo =
             novoTitulo.titulo;
 
-
         console.log(
             "Novo título gerado com sucesso."
         );
-
     }
-
 
     /*
     ==================================================
@@ -656,6 +839,71 @@ ${texto}
 
     delete resultado.conteudo;
 
+    /*
+    ==================================================
+    GARANTIR ALT TEXT NOVAMENTE
+    ==================================================
+    */
+
+    if (
+        !resultado.alt_text ||
+        resultado.alt_text.trim().length === 0
+    ) {
+
+        resultado.alt_text =
+            resultado.titulo ||
+            titulo ||
+            "Imagem relacionada à notícia";
+
+    }
+
+    /*
+    ==================================================
+    LOG FINAL
+    ==================================================
+    */
+
+    console.log(
+        "========================================"
+    );
+
+    console.log(
+        "Resultado final da IA:"
+    );
+
+    console.log(
+        "Título:",
+        resultado.titulo
+    );
+
+    console.log(
+        "Tags:",
+        resultado.tags
+    );
+
+    console.log(
+        "Categorias:",
+        resultado.categorias
+    );
+
+    console.log(
+        "Frase-chave:",
+        resultado.frase_chave
+    );
+
+    console.log(
+        "Meta descrição:",
+        resultado.meta_descricao
+    );
+
+    console.log(
+        "ALT text:",
+        resultado.alt_text
+    );
+
+    console.log(
+        "========================================"
+    );
 
     /*
     ==================================================
@@ -664,12 +912,15 @@ ${texto}
     */
 
     return resultado;
-
 }
 
+/*
+==================================================
+EXPORTAR
+==================================================
+*/
 
 module.exports = {
-
     gerarMateria
-
 };
+

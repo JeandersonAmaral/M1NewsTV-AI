@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+"scripts": {
+  "dev": "nodemon src/server.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,5 +17,8 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsdom": "^30.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

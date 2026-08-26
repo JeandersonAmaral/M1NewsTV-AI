@@ -7,14 +7,15 @@ const { extrairMateria } =
 const { criarRascunho: criarRascunhoWordPress } =
     require("../services/wordpressService");
 
+const { validarUrl } =
+    require("../utils/urlValidator");
+
 // ========================================
 // IDENTIFICAR FONTE
 // ========================================
 
 function identificarFonte(url) {
-
     try {
-
         const dominio =
             new URL(url)
                 .hostname
@@ -22,13 +23,11 @@ function identificarFonte(url) {
                 .toLowerCase();
 
         const fontes = {
-
             "agenciabrasil.ebc.com.br":
                 "Agência Brasil",
 
             "brasildefato.com.br":
                 "Brasil de Fato"
-
         };
 
         if (fontes[dominio]) {
@@ -38,11 +37,8 @@ function identificarFonte(url) {
         return dominio;
 
     } catch (error) {
-
         return "Fonte não identificada";
-
     }
-
 }
 
 // ========================================
@@ -54,7 +50,6 @@ function montarConteudoFinal(
     corpoOriginal,
     fonte
 ) {
-
     const subtituloHTML =
         `<h1 style="text-align: center;"><strong>${subtitulo}</strong></h1>`;
 
@@ -66,7 +61,6 @@ function montarConteudoFinal(
         corpoOriginal,
         fonteHTML
     ].join("\n\n");
-
 }
 
 // ========================================
@@ -82,16 +76,11 @@ async function gerarMateria(req, res) {
     // ========================================
 
     if (!url) {
-
         return res.status(400).json({
-
             sucesso: false,
-
             mensagem:
                 "A URL da matéria é obrigatória."
-
         });
-
     }
 
     console.log(
@@ -100,6 +89,12 @@ async function gerarMateria(req, res) {
     );
 
     try {
+
+        // ========================================
+        // VALIDAR URL CONTRA SSRF
+        // ========================================
+
+        validarUrl(url);
 
         // ========================================
         // 1. EXTRAIR MATÉRIA ORIGINAL
@@ -179,17 +174,22 @@ async function gerarMateria(req, res) {
         );
 
         // ========================================
+        // 5.2 MOSTRAR ALT GERADO PELA IA
+        // ========================================
+
+        console.log(
+            "ALT gerado pela IA:",
+            materiaGerada.alt_text || "Nenhum"
+        );
+
+        // ========================================
         // 6. RETORNAR PARA A INTERFACE
         // ========================================
 
         return res.json({
-
             sucesso: true,
-
             materiaOriginal,
-
             materiaGerada
-
         });
 
     } catch (error) {
@@ -200,17 +200,12 @@ async function gerarMateria(req, res) {
         );
 
         return res.status(500).json({
-
             sucesso: false,
-
             mensagem:
                 error.message ||
                 "Erro ao processar a matéria."
-
         });
-
     }
-
 }
 
 // ========================================
@@ -220,25 +215,16 @@ async function gerarMateria(req, res) {
 async function criarRascunho(req, res) {
 
     const {
-
         titulo,
-
         conteudo,
-
         descricao,
-
         slug,
-
         tags,
-
         categorias,
-
         frase_chave,
-
         meta_descricao,
-
-        imagem
-
+        imagem,
+        alt_text
     } = req.body;
 
     // ========================================
@@ -246,29 +232,19 @@ async function criarRascunho(req, res) {
     // ========================================
 
     if (!titulo) {
-
         return res.status(400).json({
-
             sucesso: false,
-
             mensagem:
                 "O título da matéria é obrigatório."
-
         });
-
     }
 
     if (!conteudo) {
-
         return res.status(400).json({
-
             sucesso: false,
-
             mensagem:
                 "O conteúdo da matéria está vazio."
-
         });
-
     }
 
     console.log(
@@ -304,6 +280,11 @@ async function criarRascunho(req, res) {
         imagem || "Nenhuma"
     );
 
+    console.log(
+        "ALT recebido:",
+        alt_text || "Nenhum"
+    );
+
     // ========================================
     // CRIAR RASCUNHO
     // ========================================
@@ -312,26 +293,17 @@ async function criarRascunho(req, res) {
 
         const resultado =
             await criarRascunhoWordPress({
-
-                titulo,
-
-                conteudo,
-
-                descricao,
-
-                slug,
-
-                tags,
-
-                categorias,
-
-                frase_chave,
-
-                meta_descricao,
-
-                imagem
-
-            });
+            titulo,
+            conteudo,
+            descricao,
+            slug,
+            tags,
+            categorias,
+            frase_chave,
+            meta_descricao,
+            imagem,
+            alt_text
+        });
 
         // ========================================
         // RESULTADO
@@ -376,7 +348,6 @@ async function criarRascunho(req, res) {
 
             status:
                 resultado.status
-
         });
 
     } catch (error) {
@@ -393,11 +364,8 @@ async function criarRascunho(req, res) {
             mensagem:
                 error.message ||
                 "Não foi possível criar o rascunho no WordPress."
-
         });
-
     }
-
 }
 
 // ========================================
@@ -422,7 +390,6 @@ async function testarWordPress(req, res) {
 
                 slug:
                     "teste-m1newstv-ai"
-
             });
 
         return res.json({
@@ -437,7 +404,6 @@ async function testarWordPress(req, res) {
 
             status:
                 resultado.status
-
         });
 
     } catch (error) {
@@ -450,11 +416,8 @@ async function testarWordPress(req, res) {
 
             mensagem:
                 error.message
-
         });
-
     }
-
 }
 
 // ========================================
@@ -470,4 +433,3 @@ module.exports = {
     testarWordPress
 
 };
-

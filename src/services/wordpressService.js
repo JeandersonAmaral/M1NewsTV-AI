@@ -7,7 +7,6 @@ const WORDPRESS_APP_PASSWORD = process.env.WORDPRESS_APP_PASSWORD;
 // ========================================
 
 function getAuthHeader() {
-
     const credentials =
         `${WORDPRESS_USER}:${WORDPRESS_APP_PASSWORD}`;
 
@@ -17,7 +16,6 @@ function getAuthHeader() {
             .from(credentials)
             .toString("base64")
     );
-
 }
 
 // ========================================
@@ -25,14 +23,10 @@ function getAuthHeader() {
 // ========================================
 
 function getJsonHeaders() {
-
     return {
-
         "Content-Type": "application/json",
         "Authorization": getAuthHeader()
-
     };
-
 }
 
 // ========================================
@@ -40,15 +34,12 @@ function getJsonHeaders() {
 // ========================================
 
 async function obterOuCriarTag(nome) {
-
     const headers = getJsonHeaders();
 
     const nomeLimpo = nome.trim();
 
     if (!nomeLimpo) {
-
         return null;
-
     }
 
     // ========================================
@@ -56,43 +47,30 @@ async function obterOuCriarTag(nome) {
     // ========================================
 
     const busca = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/tags?search=${encodeURIComponent(nomeLimpo)}&per_page=100`,
-
         {
-
             method: "GET",
             headers
-
         }
-
     );
 
     if (!busca.ok) {
-
         throw new Error(
-
             "Não foi possível buscar a tag: " +
             nomeLimpo
-
         );
-
     }
 
     const tags = await busca.json();
 
     const tagExistente = tags.find(
-
         tag =>
             tag.name.toLowerCase() ===
             nomeLimpo.toLowerCase()
-
     );
 
     if (tagExistente) {
-
         return tagExistente.id;
-
     }
 
     // ========================================
@@ -100,17 +78,11 @@ async function obterOuCriarTag(nome) {
     // ========================================
 
     const slug = nomeLimpo
-
         .normalize("NFD")
-
         .replace(/[\u0300-\u036f]/g, "")
-
         .toLowerCase()
-
         .replace(/[^a-z0-9\s-]/g, "")
-
         .trim()
-
         .replace(/\s+/g, "-");
 
     // ========================================
@@ -118,29 +90,20 @@ async function obterOuCriarTag(nome) {
     // ========================================
 
     const buscaSlug = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/tags?slug=${encodeURIComponent(slug)}`,
-
         {
-
             method: "GET",
             headers
-
         }
-
     );
 
     if (buscaSlug.ok) {
-
         const tagsSlug =
             await buscaSlug.json();
 
         if (tagsSlug.length > 0) {
-
             return tagsSlug[0].id;
-
         }
-
     }
 
     // ========================================
@@ -148,24 +111,15 @@ async function obterOuCriarTag(nome) {
     // ========================================
 
     const novaTag = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/tags`,
-
         {
-
             method: "POST",
-
             headers,
-
             body: JSON.stringify({
-
                 name: nomeLimpo,
                 slug
-
             })
-
         }
-
     );
 
     const data =
@@ -176,30 +130,21 @@ async function obterOuCriarTag(nome) {
     // ========================================
 
     if (!novaTag.ok) {
-
         if (
-
             data.code === "term_exists" &&
             data.data &&
             data.data.term_id
-
         ) {
-
             return data.data.term_id;
-
         }
 
         throw new Error(
-
             data.message ||
             `Não foi possível criar a tag: ${nomeLimpo}`
-
         );
-
     }
 
     return data.id;
-
 }
 
 // ========================================
@@ -207,35 +152,22 @@ async function obterOuCriarTag(nome) {
 // ========================================
 
 async function obterCategoria(nome) {
-
     const response = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/categories?search=${encodeURIComponent(nome)}&per_page=100`,
-
         {
-
             method: "GET",
-
             headers: {
-
                 "Authorization":
                     getAuthHeader()
-
             }
-
         }
-
     );
 
     if (!response.ok) {
-
         throw new Error(
-
             "Não foi possível buscar a categoria: " +
             nome
-
         );
-
     }
 
     const categorias =
@@ -243,27 +175,20 @@ async function obterCategoria(nome) {
 
     const categoria =
         categorias.find(
-
             item =>
                 item.name.toLowerCase() ===
                 nome.toLowerCase()
-
         );
 
     if (!categoria) {
-
         console.warn(
-
             `Categoria não encontrada no WordPress: ${nome}`
-
         );
 
         return null;
-
     }
 
     return categoria.id;
-
 }
 
 // ========================================
@@ -271,11 +196,8 @@ async function obterCategoria(nome) {
 // ========================================
 
 async function baixarImagem(url) {
-
     if (!url) {
-
         return null;
-
     }
 
     console.log(
@@ -284,21 +206,16 @@ async function baixarImagem(url) {
     );
 
     try {
-
         const response =
             await fetch(url);
 
         if (!response.ok) {
-
             console.warn(
-
                 "Não foi possível baixar a imagem. Status:",
                 response.status
-
             );
 
             return null;
-
         }
 
         const arrayBuffer =
@@ -314,48 +231,35 @@ async function baixarImagem(url) {
         let extensao = "jpg";
 
         if (contentType.includes("png")) {
-
             extensao = "png";
-
         } else if (
             contentType.includes("webp")
         ) {
-
             extensao = "webp";
-
         } else if (
             contentType.includes("gif")
         ) {
-
             extensao = "gif";
-
         } else if (
             contentType.includes("avif")
         ) {
-
             extensao = "avif";
-
         }
 
         return {
-
             buffer,
             contentType,
             extensao
-
         };
 
     } catch (error) {
-
         console.error(
             "Erro ao baixar imagem:",
             error
         );
 
         return null;
-
     }
-
 }
 
 // ========================================
@@ -365,27 +269,43 @@ async function baixarImagem(url) {
 async function enviarImagemParaWordPress(
     imagemUrl,
     titulo,
-    tags
+    tags,
+    altTexto
 ) {
-
     if (!imagemUrl) {
-
         console.log(
             "Nenhuma imagem para enviar."
         );
 
         return null;
-
     }
 
     const imagem =
         await baixarImagem(imagemUrl);
 
     if (!imagem) {
-
         return null;
-
     }
+
+    // ========================================
+    // DIAGNÓSTICO DO ARQUIVO
+    // ========================================
+
+    console.log(
+        "Content-Type da imagem:",
+        imagem.contentType
+    );
+
+    console.log(
+        "Extensão da imagem:",
+        imagem.extensao
+    );
+
+    console.log(
+        "Tamanho da imagem:",
+        imagem.buffer.length,
+        "bytes"
+    );
 
     // ========================================
     // GERAR TEXTO DAS TAGS
@@ -393,7 +313,6 @@ async function enviarImagemParaWordPress(
 
     const tagsTexto =
         Array.isArray(tags)
-
             ? tags
                 .filter(
                     tag =>
@@ -406,7 +325,6 @@ async function enviarImagemParaWordPress(
                         tag.trim()
                 )
                 .join(", ")
-
             : "";
 
     // ========================================
@@ -415,23 +333,21 @@ async function enviarImagemParaWordPress(
 
     const nomeArquivo =
         (titulo || "imagem-materia")
-
             .normalize("NFD")
-
             .replace(/[\u0300-\u036f]/g, "")
-
             .toLowerCase()
-
             .replace(/[^a-z0-9\s-]/g, "")
-
             .trim()
-
             .replace(/\s+/g, "-")
-
             .substring(0, 80);
 
     const filename =
         `${nomeArquivo || "imagem-materia"}.${imagem.extensao}`;
+
+    console.log(
+        "Nome do arquivo:",
+        filename
+    );
 
     console.log(
         "Enviando imagem para WordPress:",
@@ -443,15 +359,11 @@ async function enviarImagemParaWordPress(
     // ========================================
 
     const response = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/media`,
-
         {
-
             method: "POST",
 
             headers: {
-
                 "Authorization":
                     getAuthHeader(),
 
@@ -460,13 +372,10 @@ async function enviarImagemParaWordPress(
 
                 "Content-Disposition":
                     `attachment; filename="${filename}"`
-
             },
 
             body: imagem.buffer
-
         }
-
     );
 
     // ========================================
@@ -479,12 +388,10 @@ async function enviarImagemParaWordPress(
     let data;
 
     try {
-
         data =
             JSON.parse(responseText);
 
     } catch (error) {
-
         console.error(
             "WordPress não retornou JSON ao enviar a imagem."
         );
@@ -505,11 +412,8 @@ async function enviarImagemParaWordPress(
         );
 
         throw new Error(
-
             `WordPress retornou uma resposta inválida ao enviar a imagem. Status: ${response.status}`
-
         );
-
     }
 
     // ========================================
@@ -517,19 +421,15 @@ async function enviarImagemParaWordPress(
     // ========================================
 
     if (!response.ok) {
-
         console.error(
             "Erro ao enviar imagem:",
             data
         );
 
         throw new Error(
-
             data.message ||
             "Não foi possível enviar a imagem para o WordPress."
-
         );
-
     }
 
     console.log(
@@ -543,7 +443,9 @@ async function enviarImagemParaWordPress(
 
     // ========================================
     // ATUALIZAR METADADOS DA IMAGEM
-    // TODOS OS CAMPOS RECEBEM AS TAGS
+    // ========================================
+    // TÍTULO, LEGENDA E DESCRIÇÃO = TAGS
+    // ALT = TEXTO GERADO PELA IA
     // ========================================
 
     console.log(
@@ -555,32 +457,28 @@ async function enviarImagemParaWordPress(
         tagsTexto
     );
 
-    const metadados = {
+    console.log(
+        "ALT gerado pela IA:",
+        altTexto
+    );
 
-        // Título da mídia
+    const metadados = {
         title:
             tagsTexto || "Imagem da matéria",
 
-        // Texto alternativo
         alt_text:
-            tagsTexto || "Imagem da matéria",
+            altTexto || "Imagem da matéria",
 
-        // Legenda
         caption:
             tagsTexto || "",
 
-        // Descrição
         description:
             tagsTexto || ""
-
     };
 
     const atualizar = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/media/${data.id}`,
-
         {
-
             method: "POST",
 
             headers:
@@ -588,9 +486,7 @@ async function enviarImagemParaWordPress(
 
             body:
                 JSON.stringify(metadados)
-
         }
-
     );
 
     // ========================================
@@ -603,12 +499,10 @@ async function enviarImagemParaWordPress(
     let imagemAtualizada;
 
     try {
-
         imagemAtualizada =
             JSON.parse(atualizarText);
 
     } catch (error) {
-
         console.error(
             "WordPress retornou JSON inválido ao atualizar os metadados."
         );
@@ -624,29 +518,20 @@ async function enviarImagemParaWordPress(
         );
 
         throw new Error(
-
             `WordPress retornou uma resposta inválida ao atualizar os metadados. Status: ${atualizar.status}`
-
         );
-
     }
 
     if (!atualizar.ok) {
-
         console.error(
-
             "Erro ao atualizar metadados da imagem:",
             imagemAtualizada
-
         );
 
         throw new Error(
-
             imagemAtualizada?.message ||
             "A imagem foi enviada, mas não foi possível atualizar seus metadados."
-
         );
-
     }
 
     console.log(
@@ -660,7 +545,7 @@ async function enviarImagemParaWordPress(
 
     console.log(
         "ALT:",
-        tagsTexto
+        altTexto
     );
 
     console.log(
@@ -674,7 +559,6 @@ async function enviarImagemParaWordPress(
     );
 
     return imagemAtualizada;
-
 }
 
 // ========================================
@@ -682,7 +566,6 @@ async function enviarImagemParaWordPress(
 // ========================================
 
 async function criarRascunho(materia) {
-
     const headers =
         getJsonHeaders();
 
@@ -711,13 +594,10 @@ async function criarRascunho(materia) {
     const tagIds = [];
 
     if (Array.isArray(materia.tags)) {
-
         for (const tag of materia.tags) {
 
             if (!tag || !tag.trim()) {
-
                 continue;
-
             }
 
             const id =
@@ -726,13 +606,9 @@ async function criarRascunho(materia) {
                 );
 
             if (id) {
-
                 tagIds.push(id);
-
             }
-
         }
-
     }
 
     // ========================================
@@ -742,19 +618,15 @@ async function criarRascunho(materia) {
     const categoriaIds = [];
 
     if (Array.isArray(materia.categorias)) {
-
         for (
             const categoria
             of materia.categorias
         ) {
-
             if (
                 !categoria ||
                 !categoria.trim()
             ) {
-
                 continue;
-
             }
 
             const id =
@@ -763,13 +635,9 @@ async function criarRascunho(materia) {
                 );
 
             if (id) {
-
                 categoriaIds.push(id);
-
             }
-
         }
-
     }
 
     // ========================================
@@ -779,41 +647,31 @@ async function criarRascunho(materia) {
     let imagemId = null;
 
     if (materia.imagem) {
-
         try {
 
             const imagemWordPress =
                 await enviarImagemParaWordPress(
-
                     materia.imagem,
-
                     materia.titulo,
-
-                    materia.tags
-
+                    materia.tags,
+                    materia.alt_text
                 );
 
             if (imagemWordPress) {
-
                 imagemId =
                     imagemWordPress.id;
-
             }
 
         } catch (error) {
 
             console.error(
-
                 "Erro ao enviar imagem:",
                 error.message
-
             );
 
             // Não interrompe a criação do post.
             // O rascunho ainda será criado.
-
         }
-
     }
 
     // ========================================
@@ -821,7 +679,6 @@ async function criarRascunho(materia) {
     // ========================================
 
     const postData = {
-
         title:
             materia.titulo || "",
 
@@ -842,15 +699,12 @@ async function criarRascunho(materia) {
         // ====================================
 
         meta: {
-
             _yoast_wpseo_focuskw:
                 materia.frase_chave || "",
 
             _yoast_wpseo_metadesc:
                 materia.meta_descricao || ""
-
         }
-
     };
 
     // ========================================
@@ -858,10 +712,8 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (tagIds.length > 0) {
-
         postData.tags =
             tagIds;
-
     }
 
     // ========================================
@@ -869,10 +721,8 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (categoriaIds.length > 0) {
-
         postData.categories =
             categoriaIds;
-
     }
 
     // ========================================
@@ -880,7 +730,6 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (imagemId) {
-
         postData.featured_media =
             imagemId;
 
@@ -888,7 +737,6 @@ async function criarRascunho(materia) {
             "Imagem destacada definida:",
             imagemId
         );
-
     }
 
     // ========================================
@@ -920,6 +768,11 @@ async function criarRascunho(materia) {
         materia.meta_descricao
     );
 
+    console.log(
+        "ALT da imagem:",
+        materia.alt_text
+    );
+
     // ========================================
     // ENVIAR POST
     // ========================================
@@ -929,20 +782,13 @@ async function criarRascunho(materia) {
     );
 
     const response = await fetch(
-
         `${WORDPRESS_URL}/wp-json/wp/v2/posts`,
-
         {
-
             method: "POST",
-
             headers,
-
             body:
                 JSON.stringify(postData)
-
         }
-
     );
 
     const data =
@@ -953,19 +799,15 @@ async function criarRascunho(materia) {
     // ========================================
 
     if (!response.ok) {
-
         console.error(
             "Resposta do WordPress:",
             data
         );
 
         throw new Error(
-
             data.message ||
             "Não foi possível criar o rascunho no WordPress."
-
         );
-
     }
 
     // ========================================
@@ -1000,7 +842,6 @@ async function criarRascunho(materia) {
     );
 
     return data;
-
 }
 
 // ========================================
@@ -1008,8 +849,6 @@ async function criarRascunho(materia) {
 // ========================================
 
 module.exports = {
-
     criarRascunho
-
 };
 
