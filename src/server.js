@@ -3,11 +3,17 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 
-const { gerarMateria } = require("./services/aiService");
-const { extrairMateria } = require("./services/articleExtractor");
-const { criarRascunho } = require("./services/wordpressService");
+const { gerarMateria } =
+    require("./services/aiService");
+
+const { extrairMateria } =
+    require("./services/articleExtractor");
+
+const { criarRascunho } =
+    require("./services/wordpressService");
 
 const app = express();
+
 const PORT = 3000;
 
 // ========================================
@@ -27,12 +33,14 @@ app.use(
 // ========================================
 
 app.get("/", (req, res) => {
+
     res.sendFile(
         path.join(
             __dirname,
             "../public/index.html"
         )
     );
+
 });
 
 // ========================================
@@ -40,17 +48,23 @@ app.get("/", (req, res) => {
 // ========================================
 
 function identificarFonte(url) {
+
     try {
-        const dominio = new URL(url).hostname
-            .replace("www.", "")
-            .toLowerCase();
+
+        const dominio =
+            new URL(url)
+                .hostname
+                .replace("www.", "")
+                .toLowerCase();
 
         const fontes = {
+
             "agenciabrasil.ebc.com.br":
                 "Agência Brasil",
 
             "brasildefato.com.br":
                 "Brasil de Fato"
+
         };
 
         if (fontes[dominio]) {
@@ -60,8 +74,11 @@ function identificarFonte(url) {
         return dominio;
 
     } catch (error) {
+
         return "Fonte não identificada";
+
     }
+
 }
 
 // ========================================
@@ -75,7 +92,7 @@ function montarConteudoFinal(
 ) {
 
     const subtituloHTML =
-    `<h1 style="text-align: center;"><strong>${subtitulo}</strong></h1>`;
+        `<h1 style="text-align: center;"><strong>${subtitulo}</strong></h1>`;
 
     const fonteHTML =
         `<p><strong>Fonte: ${fonte}</strong></p>`;
@@ -85,120 +102,150 @@ function montarConteudoFinal(
         corpoOriginal,
         fonteHTML
     ].join("\n\n");
+
 }
 
 // ========================================
 // GERAR MATÉRIA
 // ========================================
 
-app.post("/api/materias", async (req, res) => {
+app.post(
+    "/api/materias",
+    async (req, res) => {
 
-    const { url } = req.body;
-
-    // ========================================
-    // VALIDAR URL
-    // ========================================
-
-    if (!url) {
-        return res.status(400).json({
-            sucesso: false,
-            mensagem:
-                "A URL da matéria é obrigatória."
-        });
-    }
-
-    console.log(
-        "URL recebida:",
-        url
-    );
-
-    try {
+        const { url } = req.body;
 
         // ========================================
-        // 1. EXTRAIR MATÉRIA ORIGINAL
+        // VALIDAR URL
         // ========================================
 
-        const materiaOriginal =
-            await extrairMateria(url);
+        if (!url) {
+
+            return res.status(400).json({
+
+                sucesso: false,
+
+                mensagem:
+                    "A URL da matéria é obrigatória."
+
+            });
+
+        }
 
         console.log(
-            "Título encontrado:",
-            materiaOriginal.titulo
+            "URL recebida:",
+            url
         );
 
-        // ========================================
-        // 2. IDENTIFICAR FONTE
-        // ========================================
+        try {
 
-        const fonte =
-            identificarFonte(url);
+            // ========================================
+            // 1. EXTRAIR MATÉRIA ORIGINAL
+            // ========================================
 
-        console.log(
-            "Fonte identificada:",
-            fonte
-        );
+            const materiaOriginal =
+                await extrairMateria(url);
 
-        // ========================================
-        // 3. ENVIAR INFORMAÇÕES PARA A IA
-        // ========================================
-
-        console.log(
-            "Enviando informações para a IA..."
-        );
-
-        const materiaGerada =
-            await gerarMateria(
-                materiaOriginal.titulo,
-                materiaOriginal.texto
+            console.log(
+                "Título encontrado:",
+                materiaOriginal.titulo
             );
 
-        console.log(
-            "Informações geradas pela IA."
-        );
+            console.log(
+                "Imagem encontrada:",
+                materiaOriginal.imagem || "Nenhuma"
+            );
 
-        // ========================================
-        // 4. MONTAR CORPO FINAL
-        // ========================================
+            // ========================================
+            // 2. IDENTIFICAR FONTE
+            // ========================================
 
-        const conteudoFinal =
-            montarConteudoFinal(
-                materiaGerada.subtitulo,
-                materiaOriginal.html,
+            const fonte =
+                identificarFonte(url);
+
+            console.log(
+                "Fonte identificada:",
                 fonte
             );
 
-        // ========================================
-        // 5. ADICIONAR CONTEÚDO AO RESULTADO
-        // ========================================
+            // ========================================
+            // 3. ENVIAR INFORMAÇÕES PARA A IA
+            // ========================================
 
-        materiaGerada.conteudo =
-            conteudoFinal;
+            console.log(
+                "Enviando informações para a IA..."
+            );
 
-        // ========================================
-        // 6. RETORNAR PARA A INTERFACE
-        // ========================================
+            const materiaGerada =
+                await gerarMateria(
+                    materiaOriginal.titulo,
+                    materiaOriginal.texto
+                );
 
-        res.json({
-            sucesso: true,
-            materiaOriginal,
-            materiaGerada
-        });
+            console.log(
+                "Informações geradas pela IA."
+            );
 
-    } catch (error) {
+            // ========================================
+            // 4. MONTAR CORPO FINAL
+            // ========================================
 
-        console.error(
-            "Erro:",
-            error
-        );
+            const conteudoFinal =
+                montarConteudoFinal(
+                    materiaGerada.subtitulo,
+                    materiaOriginal.html,
+                    fonte
+                );
 
-        res.status(500).json({
-            sucesso: false,
-            mensagem:
-                error.message ||
-                "Erro ao processar a matéria."
-        });
+            // ========================================
+            // 5. ADICIONAR CONTEÚDO AO RESULTADO
+            // ========================================
+
+            materiaGerada.conteudo =
+                conteudoFinal;
+
+            // ========================================
+            // 5.1 MANTER IMAGEM ORIGINAL
+            // ========================================
+
+            materiaGerada.imagem =
+                materiaOriginal.imagem || null;
+
+            // ========================================
+            // 6. RETORNAR PARA A INTERFACE
+            // ========================================
+
+            res.json({
+
+                sucesso: true,
+
+                materiaOriginal,
+
+                materiaGerada
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erro:",
+                error
+            );
+
+            res.status(500).json({
+
+                sucesso: false,
+
+                mensagem:
+                    error.message ||
+                    "Erro ao processar a matéria."
+
+            });
+
+        }
+
     }
-});
+);
 
 // ========================================
 // ENVIAR MATÉRIA PARA RASCUNHO
@@ -209,14 +256,25 @@ app.post(
     async (req, res) => {
 
         const {
+
             titulo,
+
             conteudo,
+
             descricao,
+
             slug,
+
             tags,
+
             categorias,
+
             frase_chave,
-            meta_descricao
+
+            meta_descricao,
+
+            imagem
+
         } = req.body;
 
         // ========================================
@@ -224,19 +282,29 @@ app.post(
         // ========================================
 
         if (!titulo) {
+
             return res.status(400).json({
+
                 sucesso: false,
+
                 mensagem:
                     "O título da matéria é obrigatório."
+
             });
+
         }
 
         if (!conteudo) {
+
             return res.status(400).json({
+
                 sucesso: false,
+
                 mensagem:
                     "O conteúdo da matéria está vazio."
+
             });
+
         }
 
         console.log(
@@ -267,6 +335,11 @@ app.post(
             categorias
         );
 
+        console.log(
+            "Imagem:",
+            imagem || "Nenhuma"
+        );
+
         // ========================================
         // CRIAR RASCUNHO
         // ========================================
@@ -277,13 +350,23 @@ app.post(
                 await criarRascunho({
 
                     titulo,
+
                     conteudo,
+
                     descricao,
+
                     slug,
+
                     tags,
+
                     categorias,
+
                     frase_chave,
-                    meta_descricao
+
+                    meta_descricao,
+
+                    imagem
+
                 });
 
             // ========================================
@@ -318,10 +401,18 @@ app.post(
             // ========================================
 
             return res.json({
+
                 sucesso: true,
-                id: resultado.id,
-                link: resultado.link,
-                status: resultado.status
+
+                id:
+                    resultado.id,
+
+                link:
+                    resultado.link,
+
+                status:
+                    resultado.status
+
             });
 
         } catch (error) {
@@ -332,12 +423,17 @@ app.post(
             );
 
             return res.status(500).json({
+
                 sucesso: false,
+
                 mensagem:
                     error.message ||
                     "Não foi possível criar o rascunho no WordPress."
+
             });
+
         }
+
     }
 );
 
@@ -365,13 +461,22 @@ app.get(
 
                     slug:
                         "teste-m1newstv-ai"
+
                 });
 
             res.json({
+
                 sucesso: true,
-                id: resultado.id,
-                link: resultado.link,
-                status: resultado.status
+
+                id:
+                    resultado.id,
+
+                link:
+                    resultado.link,
+
+                status:
+                    resultado.status
+
             });
 
         } catch (error) {
@@ -379,11 +484,16 @@ app.get(
             console.error(error);
 
             res.status(500).json({
+
                 sucesso: false,
+
                 mensagem:
                     error.message
+
             });
+
         }
+
     }
 );
 
@@ -391,10 +501,14 @@ app.get(
 // INICIAR SERVIDOR
 // ========================================
 
-app.listen(PORT, () => {
+app.listen(
+    PORT,
+    () => {
 
-    console.log(
-        `Servidor rodando em http://localhost:${PORT}`
-    );
+        console.log(
+            `Servidor rodando em http://localhost:${PORT}`
+        );
 
-});
+    }
+);
+
