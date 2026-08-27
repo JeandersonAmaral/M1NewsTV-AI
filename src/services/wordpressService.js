@@ -204,8 +204,7 @@ async function baixarImagem(url) {
     }
 
     try {
-        const response =
-            await fetch(url);
+        const response = await fetch(url);
 
         if (!response.ok) {
             logger.warn(
@@ -215,77 +214,103 @@ async function baixarImagem(url) {
             return null;
         }
 
-        const arrayBuffer =
-            await response.arrayBuffer();
-
-        const buffer =
-            Buffer.from(arrayBuffer);
-
-        const contentType =
-            response.headers.get("content-type") ||
-            "image/jpeg";
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
         // ========================================
-        // WEBP
+        // LER DIMENSÕES ORIGINAIS
         // ========================================
-        // Se já for WebP, NÃO ALTERA A IMAGEM.
-        // ========================================
+
+        const metadataOriginal = await sharp(buffer).metadata();
 
         if (
-            contentType
-                .toLowerCase()
-                .includes("image/webp")
+            !metadataOriginal.width ||
+            !metadataOriginal.height
         ) {
-            return {
-                buffer,
-                contentType: "image/webp",
-                extensao: "webp",
-                processada: false
-            };
+            throw new Error(
+                "Não foi possível identificar as dimensões da imagem."
+            );
         }
 
+        logger.info(
+            `Imagem original: ${metadataOriginal.width}x${metadataOriginal.height}`
+        );
+
         // ========================================
-        // OUTROS FORMATOS
-        // ========================================
-        // Converte para WebP e redimensiona
-        // para 1080px de largura mantendo
-        // a proporção.
+        // CORRIGIR ORIENTAÇÃO EXIF
         // ========================================
 
+        // O rotate() corrige automaticamente a orientação
+        // registrada no EXIF da imagem.
+        const imagemOrientada = sharp(buffer).rotate();
+
+        const metadataOrientada =
+            await imagemOrientada.metadata();
+
+        if (
+            !metadataOrientada.width ||
+            !metadataOrientada.height
+        ) {
+            throw new Error(
+                "Não foi possível identificar as dimensões da imagem orientada."
+            );
+        }
+
         logger.info(
-            "Convertendo imagem para WebP e redimensionando para 1080px."
+            `Imagem após orientação: ${metadataOrientada.width}x${metadataOrientada.height}`
+        );
+
+        // ========================================
+        // REDIMENSIONAR SEM CORTAR
+        // ========================================
+
+        /*
+         * IMPORTANTE:
+         *
+         * Informamos SOMENTE a largura.
+         *
+         * O Sharp calcula automaticamente a altura
+         * mantendo a proporção original.
+         */
+
+        logger.info(
+            "Redimensionando imagem para largura máxima de 1080px, mantendo proporção."
         );
 
         const imagemProcessada =
-            await sharp(buffer)
+            await imagemOrientada
                 .resize({
                     width: 1080,
-                    height: 720,
-                    fit: "fill"
+                    withoutEnlargement: true,
+                    fit: "inside"
                 })
                 .webp({
                     quality: 90
                 })
                 .toBuffer();
+
         // ========================================
         // VERIFICAR DIMENSÕES FINAIS
         // ========================================
 
-        const metadata =
-            await sharp(imagemProcessada)
-                .metadata();
+        const metadataFinal =
+            await sharp(imagemProcessada).metadata();
 
         logger.info(
-            `Imagem processada: ${metadata.width}x${metadata.height} WebP`
+            `Imagem processada: ${metadataFinal.width}x${metadataFinal.height} WebP`
         );
+
+        // ========================================
+        // RETORNAR IMAGEM
+        // ========================================
 
         return {
             buffer: imagemProcessada,
             contentType: "image/webp",
             extensao: "webp",
             processada: true,
-            largura: metadata.width,
-            altura: metadata.height
+            largura: metadataFinal.width,
+            altura: metadataFinal.height
         };
 
     } catch (error) {
@@ -693,6 +718,7 @@ async function criarRascunho(materia) {
 // ========================================
 
 module.exports = {
-    criarRascunho
+    criarRascunho,
+    baixarImagem
 };
 
