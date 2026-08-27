@@ -1,3 +1,12 @@
+// ========================================
+// AUTENTICAÇÃO
+// ========================================
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "/login.html";
+}
+
 const urlInput = document.getElementById("url");
 const gerarButton = document.getElementById("gerar");
 const loading = document.getElementById("loading");
@@ -415,7 +424,10 @@ gerarButton.addEventListener(
 
                         headers: {
                             "Content-Type":
-                                "application/json"
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${token}`
                         },
 
                         body: JSON.stringify({
@@ -720,7 +732,10 @@ enviarButton.addEventListener(
 
                         headers: {
                             "Content-Type":
-                                "application/json"
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${token}`
                         },
 
                         body: JSON.stringify({
