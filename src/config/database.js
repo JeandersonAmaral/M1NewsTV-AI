@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const logger = require("../utils/logger");
 
 // ========================================
 // CONECTAR AO MONGODB
@@ -10,11 +11,11 @@ async function conectarMongoDB() {
             process.env.MONGODB_URI
         );
 
-        console.log(
+        logger.info(
             "MongoDB conectado com sucesso."
         );
     } catch (error) {
-        console.error(
+        logger.error(
             "Erro ao conectar ao MongoDB:",
             error.message
         );

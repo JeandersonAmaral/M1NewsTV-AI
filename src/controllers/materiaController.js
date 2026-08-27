@@ -204,9 +204,6 @@ async function criarRascunho(req, res) {
         // ========================================
         // RETORNAR PARA O FRONTEND
         // ========================================
-        logger.info(
-            `Rascunho criado no WordPress: ID ${resultado.id}`
-        );
 
         return res.json({
             sucesso: true,

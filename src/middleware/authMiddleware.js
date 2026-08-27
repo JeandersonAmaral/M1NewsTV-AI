@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
 
 // ========================================
 // VERIFICAR AUTENTICAÇÃO
@@ -67,7 +68,7 @@ function autenticar(req, res, next) {
 
     } catch (error) {
 
-        console.error(
+        logger.error(
             "Erro na autenticação:",
             error.message
         );

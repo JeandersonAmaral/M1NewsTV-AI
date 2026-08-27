@@ -260,15 +260,13 @@ async function baixarImagem(url) {
             await sharp(buffer)
                 .resize({
                     width: 1080,
-                    height: undefined,
-                    fit: "inside",
-                    withoutEnlargement: false
+                    height: 720,
+                    fit: "fill"
                 })
                 .webp({
-                    quality: 85
+                    quality: 90
                 })
                 .toBuffer();
-
         // ========================================
         // VERIFICAR DIMENSÕES FINAIS
         // ========================================
