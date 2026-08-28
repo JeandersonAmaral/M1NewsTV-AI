@@ -166,7 +166,7 @@ async function login(req, res) {
             payload,
             process.env.JWT_SECRET,
             {
-                expiresIn: "30d"
+                expiresIn: "3h"
             }
         );
 
@@ -264,11 +264,35 @@ async function refresh(req, res) {
 }
 
 // ========================================
+// LOGOUT
+// ========================================
+
+async function logout(req, res) {
+    try {
+        return res.json({
+            sucesso: true,
+            mensagem: "Logout realizado com sucesso."
+        });
+    } catch (error) {
+        console.error(
+            "Erro ao realizar logout:",
+            error
+        );
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro interno ao realizar logout."
+        });
+    }
+}
+
+// ========================================
 // EXPORTAR
 // ========================================
 
 module.exports = {
     cadastrarUsuario,
     login,
-    refresh
+    refresh,
+    logout
 };

@@ -1,35 +1,242 @@
 // ========================================
 // AUTENTICAÇÃO
 // ========================================
-const token = localStorage.getItem("token");
+
+let token = localStorage.getItem("token");
 
 if (!token) {
     window.location.href = "/login.html";
 }
 
-const urlInput = document.getElementById("url");
-const gerarButton = document.getElementById("gerar");
-const loading = document.getElementById("loading");
-const resultado = document.getElementById("resultado");
+// ========================================
+// FUNÇÃO PARA SAIR
+// ========================================
 
-const tituloInput = document.getElementById("titulo");
-const descricaoInput = document.getElementById("descricao");
-const subtituloInput = document.getElementById("subtitulo");
-const editor = document.getElementById("editor");
+function sair() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("usuario");
 
-const tagsContainer = document.getElementById("tags");
-const categoriasContainer = document.getElementById("categorias");
+    window.location.href = "/login.html";
+}
 
-const fraseChaveInput = document.getElementById("frase_chave");
-const slugInput = document.getElementById("slug");
-const metaDescricaoInput = document.getElementById("meta_descricao");
-const contadorMeta = document.getElementById("contadorMeta");
+// ========================================
+// BOTÃO SAIR
+// ========================================
 
-const novaTagInput = document.getElementById("novaTag");
-const adicionarTagButton = document.getElementById("adicionarTag");
+const sairButton = document.getElementById("sair");
 
-const limparButton = document.getElementById("limpar");
-const enviarButton = document.getElementById("enviar");
+if (sairButton) {
+    sairButton.addEventListener("click", () => {
+        sair();
+    });
+}
+
+// ========================================
+// RENOVAR TOKEN
+// ========================================
+
+async function renovarToken() {
+    const refreshToken =
+        localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+        sair();
+        return false;
+    }
+
+    try {
+        const response = await fetch(
+            "/api/auth/refresh",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    refreshToken
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.sucesso || !data.token) {
+            throw new Error(
+                data.mensagem ||
+                "Não foi possível renovar a sessão."
+            );
+        }
+
+        token = data.token;
+
+        localStorage.setItem(
+            "token",
+            token
+        );
+
+        return true;
+
+    } catch (error) {
+        console.error(
+            "Erro ao renovar token:",
+            error
+        );
+
+        sair();
+
+        return false;
+    }
+}
+
+// ========================================
+// FETCH AUTENTICADO
+// ========================================
+
+async function fetchAutenticado(
+    url,
+    opcoes = {}
+) {
+    if (!token) {
+        sair();
+        return null;
+    }
+
+    const opcoesComToken = {
+        ...opcoes,
+        headers: {
+            ...(opcoes.headers || {}),
+            "Authorization":
+                `Bearer ${token}`
+        }
+    };
+
+    let response = await fetch(
+        url,
+        opcoesComToken
+    );
+
+    // ========================================
+    // TOKEN EXPIRADO
+    // ========================================
+
+    if (response.status === 401) {
+
+        const renovado =
+            await renovarToken();
+
+        if (!renovado) {
+            return null;
+        }
+
+        // ========================================
+        // TENTAR NOVAMENTE COM TOKEN NOVO
+        // ========================================
+
+        const novasOpcoes = {
+            ...opcoes,
+            headers: {
+                ...(opcoes.headers || {}),
+                "Authorization":
+                    `Bearer ${token}`
+            }
+        };
+
+        response = await fetch(
+            url,
+            novasOpcoes
+        );
+    }
+
+    return response;
+}
+
+// ========================================
+// RENOVAÇÃO AUTOMÁTICA DO TOKEN
+// ========================================
+
+// O access token atual dura 15 minutos.
+// Renovamos automaticamente antes disso.
+
+let intervaloRefresh = setInterval(
+    async () => {
+
+        const refreshToken =
+            localStorage.getItem(
+                "refreshToken"
+            );
+
+        if (!refreshToken) {
+            clearInterval(
+                intervaloRefresh
+            );
+            return;
+        }
+
+        await renovarToken();
+
+    },
+    10 * 60 * 1000
+);
+
+// ========================================
+// ELEMENTOS
+// ========================================
+
+const urlInput =
+    document.getElementById("url");
+
+const gerarButton =
+    document.getElementById("gerar");
+
+const loading =
+    document.getElementById("loading");
+
+const resultado =
+    document.getElementById("resultado");
+
+const tituloInput =
+    document.getElementById("titulo");
+
+const descricaoInput =
+    document.getElementById("descricao");
+
+const subtituloInput =
+    document.getElementById("subtitulo");
+
+const editor =
+    document.getElementById("editor");
+
+const tagsContainer =
+    document.getElementById("tags");
+
+const categoriasContainer =
+    document.getElementById("categorias");
+
+const fraseChaveInput =
+    document.getElementById("frase_chave");
+
+const slugInput =
+    document.getElementById("slug");
+
+const metaDescricaoInput =
+    document.getElementById("meta_descricao");
+
+const contadorMeta =
+    document.getElementById("contadorMeta");
+
+const novaTagInput =
+    document.getElementById("novaTag");
+
+const adicionarTagButton =
+    document.getElementById("adicionarTag");
+
+const limparButton =
+    document.getElementById("limpar");
+
+const enviarButton =
+    document.getElementById("enviar");
 
 // ========================================
 // IMAGEM DA MATÉRIA ORIGINAL
@@ -48,61 +255,79 @@ let materiaAltText = "";
 // ========================================
 
 const categorias = [
+
     {
         nome: "Arte e Cultura",
         filhos: ["Cinema"]
     },
+
     {
         nome: "Cidadania"
     },
+
     {
         nome: "Clima"
     },
+
     {
         nome: "Codemar"
     },
+
     {
         nome: "Culinária"
     },
+
     {
         nome: "Destaques"
     },
+
     {
         nome: "Economia"
     },
+
     {
         nome: "Educação"
     },
+
     {
         nome: "Esporte",
         filhos: [
             "Copa do Mundo FIFA 2026"
         ]
     },
+
     {
         nome: "FaceNews"
     },
+
     {
         nome: "FLIM"
     },
+
     {
         nome: "Geral"
     },
+
     {
         nome: "Internacional"
     },
+
     {
         nome: "Jovens"
     },
+
     {
         nome: "Justiça"
     },
+
     {
         nome: "Maricá"
     },
+
     {
         nome: "Maricarnaval"
     },
+
     {
         nome: "Meio Ambiente",
         filhos: [
@@ -111,9 +336,11 @@ const categorias = [
             "Sustentabilidade"
         ]
     },
+
     {
         nome: "Mulher"
     },
+
     {
         nome: "Política",
         filhos: [
@@ -121,6 +348,7 @@ const categorias = [
             "Eleições 2026"
         ]
     },
+
     {
         nome: "Saúde",
         filhos: [
@@ -128,24 +356,30 @@ const categorias = [
             "Saúde Animal"
         ]
     },
+
     {
         nome: "Segurança",
         filhos: [
             "Polícia"
         ]
     },
+
     {
         nome: "Tecnologia"
     },
+
     {
         nome: "Trânsito"
     },
+
     {
         nome: "Turismo"
     },
+
     {
         nome: "Últimas Notícias"
     }
+
 ];
 
 // ========================================
@@ -212,7 +446,6 @@ function criarCheckboxCategoria(
     `;
 
     categoriasContainer.appendChild(label);
-
 }
 
 // ========================================
@@ -286,10 +519,10 @@ function adicionarTagNaTela(tag) {
     );
 
     elemento.appendChild(texto);
+
     elemento.appendChild(remover);
 
     tagsContainer.appendChild(elemento);
-
 }
 
 // ========================================
@@ -308,7 +541,6 @@ function adicionarNovaTag() {
     adicionarTagNaTela(tag);
 
     novaTagInput.value = "";
-
 }
 
 adicionarTagButton.addEventListener(
@@ -417,17 +649,14 @@ gerarButton.addEventListener(
         try {
 
             const response =
-                await fetch(
+                await fetchAutenticado(
                     "/api/materias",
                     {
                         method: "POST",
 
                         headers: {
                             "Content-Type":
-                                "application/json",
-
-                            "Authorization":
-                                `Bearer ${token}`
+                                "application/json"
                         },
 
                         body: JSON.stringify({
@@ -435,6 +664,10 @@ gerarButton.addEventListener(
                         })
                     }
                 );
+
+            if (!response) {
+                return;
+            }
 
             const data =
                 await response.json();
@@ -617,14 +850,14 @@ enviarButton.addEventListener(
             Array.from(
                 tagsContainer.querySelectorAll("span")
             )
-            .map(
-                elemento =>
-                    elemento.textContent.trim()
-            )
-            .filter(
-                tag =>
-                    tag.length > 0
-            );
+                .map(
+                    elemento =>
+                        elemento.textContent.trim()
+                )
+                .filter(
+                    tag =>
+                        tag.length > 0
+                );
 
         // ========================================
         // PEGAR CATEGORIAS
@@ -636,10 +869,10 @@ enviarButton.addEventListener(
                     'input[type="checkbox"]:checked'
                 )
             )
-            .map(
-                checkbox =>
-                    checkbox.value
-            );
+                .map(
+                    checkbox =>
+                        checkbox.value
+                );
 
         // ========================================
         // VALIDAÇÃO
@@ -654,7 +887,6 @@ enviarButton.addEventListener(
             tituloInput.focus();
 
             return;
-
         }
 
         if (!conteudo) {
@@ -666,7 +898,6 @@ enviarButton.addEventListener(
             editor.focus();
 
             return;
-
         }
 
         // ========================================
@@ -725,17 +956,14 @@ enviarButton.addEventListener(
             // ========================================
 
             const response =
-                await fetch(
+                await fetchAutenticado(
                     "/api/materias/rascunho",
                     {
                         method: "POST",
 
                         headers: {
                             "Content-Type":
-                                "application/json",
-
-                            "Authorization":
-                                `Bearer ${token}`
+                                "application/json"
                         },
 
                         body: JSON.stringify({
@@ -760,16 +988,24 @@ enviarButton.addEventListener(
                                 categoriasSelecionadas,
 
                             // IMAGEM DA MATÉRIA
+
                             imagem:
-                                imagemMateria || null,
+                                imagemMateria ||
+                                null,
 
                             // ALT TEXT GERADO PELA IA
+
                             alt_text:
-                                alt_text || ""
+                                alt_text ||
+                                ""
 
                         })
                     }
                 );
+
+            if (!response) {
+                return;
+            }
 
             const data =
                 await response.json();
@@ -875,7 +1111,6 @@ enviarButton.addEventListener(
 
             enviarButton.textContent =
                 textoOriginal;
-
         }
 
     }
