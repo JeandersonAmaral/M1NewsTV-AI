@@ -663,8 +663,6 @@ metaDescricaoInput.addEventListener(
 // GERAR MATÉRIA
 // ========================================
 
-//const MODO_TESTE_PREVIEW = true;
-
 gerarButton.addEventListener(
     "click",
     async () => {
@@ -683,33 +681,6 @@ gerarButton.addEventListener(
             return;
 
         }
-
-        /*if (MODO_TESTE_PREVIEW) {
-
-            imagemMateria =
-                "https://picsum.photos/800/450";
-
-            previewImagem.src =
-                imagemMateria;
-
-            previewImagem.onload = () => {
-
-                tamanhoImagem.textContent =
-                    `Dimensões: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px — Formato: WebP`;
-
-            };
-
-            previewImagemContainer.classList.remove(
-                "hidden"
-            );
-
-            resultado.classList.remove(
-                "hidden"
-            );
-
-            return;
-
-        }*/
 
         gerarButton.disabled = true;
 
