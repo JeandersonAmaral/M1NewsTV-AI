@@ -109,7 +109,7 @@ m1newstv-ai/
 ├── public/
 │   ├── images/
 │   │   ├── M1_logo.png
-│   │   └── screenshot-dashboard.png
+│   │   └── favicon-32x32.png
 │   │
 │   ├── js/
 │   │   ├── app.js
