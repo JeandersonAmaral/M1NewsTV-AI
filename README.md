@@ -155,7 +155,7 @@ m1newstv-ai/
 
 ![M1News AI Logo](public/images/M1_logo.png)
 
-### Interface
+### Araquivo de ícone
 
 ![M1News AI Dashboard](public/images/favicon-32x32.png)
 
