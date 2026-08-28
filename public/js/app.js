@@ -5,7 +5,9 @@
 let token = localStorage.getItem("token");
 
 if (!token) {
+
     window.location.href = "/login.html";
+
 }
 
 // ========================================
@@ -13,11 +15,15 @@ if (!token) {
 // ========================================
 
 function sair() {
+
     localStorage.removeItem("token");
+
     localStorage.removeItem("refreshToken");
+
     localStorage.removeItem("usuario");
 
     window.location.href = "/login.html";
+
 }
 
 // ========================================
@@ -27,9 +33,13 @@ function sair() {
 const sairButton = document.getElementById("sair");
 
 if (sairButton) {
+
     sairButton.addEventListener("click", () => {
+
         sair();
+
     });
+
 }
 
 // ========================================
@@ -37,15 +47,20 @@ if (sairButton) {
 // ========================================
 
 async function renovarToken() {
+
     const refreshToken =
         localStorage.getItem("refreshToken");
 
     if (!refreshToken) {
+
         sair();
+
         return false;
+
     }
 
     try {
+
         const response = await fetch(
             "/api/auth/refresh",
             {
@@ -63,10 +78,12 @@ async function renovarToken() {
         const data = await response.json();
 
         if (!response.ok || !data.sucesso || !data.token) {
+
             throw new Error(
                 data.mensagem ||
                 "Não foi possível renovar a sessão."
             );
+
         }
 
         token = data.token;
@@ -79,6 +96,7 @@ async function renovarToken() {
         return true;
 
     } catch (error) {
+
         console.error(
             "Erro ao renovar token:",
             error
@@ -87,7 +105,9 @@ async function renovarToken() {
         sair();
 
         return false;
+
     }
+
 }
 
 // ========================================
@@ -98,18 +118,28 @@ async function fetchAutenticado(
     url,
     opcoes = {}
 ) {
+
     if (!token) {
+
         sair();
+
         return null;
+
     }
 
     const opcoesComToken = {
+
         ...opcoes,
+
         headers: {
+
             ...(opcoes.headers || {}),
+
             "Authorization":
                 `Bearer ${token}`
+
         }
+
     };
 
     let response = await fetch(
@@ -127,7 +157,9 @@ async function fetchAutenticado(
             await renovarToken();
 
         if (!renovado) {
+
             return null;
+
         }
 
         // ========================================
@@ -135,21 +167,29 @@ async function fetchAutenticado(
         // ========================================
 
         const novasOpcoes = {
+
             ...opcoes,
+
             headers: {
+
                 ...(opcoes.headers || {}),
+
                 "Authorization":
                     `Bearer ${token}`
+
             }
+
         };
 
         response = await fetch(
             url,
             novasOpcoes
         );
+
     }
 
     return response;
+
 }
 
 // ========================================
@@ -160,6 +200,7 @@ async function fetchAutenticado(
 // Renovamos automaticamente antes disso.
 
 let intervaloRefresh = setInterval(
+
     async () => {
 
         const refreshToken =
@@ -168,16 +209,21 @@ let intervaloRefresh = setInterval(
             );
 
         if (!refreshToken) {
+
             clearInterval(
                 intervaloRefresh
             );
+
             return;
+
         }
 
         await renovarToken();
 
     },
+
     10 * 60 * 1000
+
 );
 
 // ========================================
@@ -237,6 +283,15 @@ const limparButton =
 
 const enviarButton =
     document.getElementById("enviar");
+
+const previewImagemContainer =
+    document.getElementById("previewImagemContainer");
+
+const previewImagem =
+    document.getElementById("previewImagem");
+
+const tamanhoImagem =
+    document.getElementById("tamanhoImagem");
 
 // ========================================
 // IMAGEM DA MATÉRIA ORIGINAL
@@ -432,6 +487,7 @@ function criarCheckboxCategoria(
         "flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50";
 
     label.innerHTML = `
+
         <input
             type="checkbox"
             value="${nome}"
@@ -443,9 +499,11 @@ function criarCheckboxCategoria(
         <span>
             ${nome}
         </span>
+
     `;
 
     categoriasContainer.appendChild(label);
+
 }
 
 // ========================================
@@ -523,6 +581,7 @@ function adicionarTagNaTela(tag) {
     elemento.appendChild(remover);
 
     tagsContainer.appendChild(elemento);
+
 }
 
 // ========================================
@@ -535,12 +594,15 @@ function adicionarNovaTag() {
         novaTagInput.value.trim();
 
     if (!tag) {
+
         return;
+
     }
 
     adicionarTagNaTela(tag);
 
     novaTagInput.value = "";
+
 }
 
 adicionarTagButton.addEventListener(
@@ -601,6 +663,8 @@ metaDescricaoInput.addEventListener(
 // GERAR MATÉRIA
 // ========================================
 
+//const MODO_TESTE_PREVIEW = true;
+
 gerarButton.addEventListener(
     "click",
     async () => {
@@ -617,7 +681,35 @@ gerarButton.addEventListener(
             urlInput.focus();
 
             return;
+
         }
+
+        /*if (MODO_TESTE_PREVIEW) {
+
+            imagemMateria =
+                "https://picsum.photos/800/450";
+
+            previewImagem.src =
+                imagemMateria;
+
+            previewImagem.onload = () => {
+
+                tamanhoImagem.textContent =
+                    `Dimensões: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px — Formato: WebP`;
+
+            };
+
+            previewImagemContainer.classList.remove(
+                "hidden"
+            );
+
+            resultado.classList.remove(
+                "hidden"
+            );
+
+            return;
+
+        }*/
 
         gerarButton.disabled = true;
 
@@ -641,6 +733,18 @@ gerarButton.addEventListener(
 
         materiaAltText = "";
 
+        // ========================================
+        // LIMPAR PREVIEW DA MATÉRIA ANTERIOR
+        // ========================================
+
+        previewImagem.src = "";
+
+        tamanhoImagem.textContent = "";
+
+        previewImagemContainer.classList.add(
+            "hidden"
+        );
+
         enviarButton.disabled = false;
 
         enviarButton.textContent =
@@ -662,11 +766,14 @@ gerarButton.addEventListener(
                         body: JSON.stringify({
                             url
                         })
+
                     }
                 );
 
             if (!response) {
+
                 return;
+
             }
 
             const data =
@@ -699,6 +806,38 @@ gerarButton.addEventListener(
                 "Imagem encontrada:",
                 imagemMateria
             );
+
+            // ========================================
+            // PREVIEW DA IMAGEM
+            // ========================================
+
+            if (imagemMateria) {
+
+                previewImagem.src =
+                    imagemMateria;
+
+                previewImagem.onload = () => {
+
+                    tamanhoImagem.textContent =
+                        `Dimensões: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px`;
+
+                };
+
+                previewImagemContainer.classList.remove(
+                    "hidden"
+                );
+
+            } else {
+
+                previewImagem.src = "";
+
+                tamanhoImagem.textContent = "";
+
+                previewImagemContainer.classList.add(
+                    "hidden"
+                );
+
+            }
 
             // ========================================
             // ALT TEXT GERADO PELA IA
@@ -887,6 +1026,7 @@ enviarButton.addEventListener(
             tituloInput.focus();
 
             return;
+
         }
 
         if (!conteudo) {
@@ -898,6 +1038,7 @@ enviarButton.addEventListener(
             editor.focus();
 
             return;
+
         }
 
         // ========================================
@@ -910,7 +1051,9 @@ enviarButton.addEventListener(
             );
 
         if (!confirmar) {
+
             return;
+
         }
 
         // ========================================
@@ -988,23 +1131,24 @@ enviarButton.addEventListener(
                                 categoriasSelecionadas,
 
                             // IMAGEM DA MATÉRIA
-
                             imagem:
                                 imagemMateria ||
                                 null,
 
                             // ALT TEXT GERADO PELA IA
-
                             alt_text:
                                 alt_text ||
                                 ""
 
                         })
+
                     }
                 );
 
             if (!response) {
+
                 return;
+
             }
 
             const data =
@@ -1058,7 +1202,9 @@ enviarButton.addEventListener(
                 );
 
             if (linkExistente) {
+
                 linkExistente.remove();
+
             }
 
             const abrirRascunho =
@@ -1111,6 +1257,7 @@ enviarButton.addEventListener(
 
             enviarButton.textContent =
                 textoOriginal;
+
         }
 
     }
@@ -1129,7 +1276,9 @@ limparButton.addEventListener(
                 "Deseja limpar a matéria atual?"
             )
         ) {
+
             return;
+
         }
 
         urlInput.value = "";
@@ -1155,6 +1304,14 @@ limparButton.addEventListener(
         // ========================================
 
         imagemMateria = null;
+
+        previewImagem.src = "";
+
+        tamanhoImagem.textContent = "";
+
+        previewImagemContainer.classList.add(
+            "hidden"
+        );
 
         // ========================================
         // LIMPAR ALT TEXT
@@ -1195,7 +1352,9 @@ limparButton.addEventListener(
             );
 
         if (abrirRascunho) {
+
             abrirRascunho.remove();
+
         }
 
         // ========================================
@@ -1230,8 +1389,11 @@ limparButton.addEventListener(
         // ========================================
 
         window.scrollTo({
+
             top: 0,
+
             behavior: "smooth"
+
         });
 
     }
