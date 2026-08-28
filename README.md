@@ -2,6 +2,11 @@
 
 **Assistente inteligente de redação e publicação para o M1NewsTV**
 
+Aplicação online
+
+Acesse o M1News AI:
+https://m1news-ai.onrender.com/
+
 O **M1News AI** é uma aplicação web desenvolvida para auxiliar o processo de produção de matérias jornalísticas do **M1NewsTV**, automatizando tarefas de preparação, organização e publicação de conteúdo.
 
 A aplicação recebe a URL de uma matéria, extrai seu conteúdo, utiliza inteligência artificial para gerar informações editoriais e de SEO e permite que o responsável revise o material antes de enviá-lo como **rascunho para o WordPress**.
@@ -152,7 +157,7 @@ m1newstv-ai/
 
 ### Interface
 
-![M1News AI Dashboard](public/images/screenshot-dashboard.png)
+![M1News AI Dashboard](public/images/favicon-32x32.png)
 
 ---
 
@@ -243,9 +248,9 @@ m1newstv-ai/
                   └─────────┬──────────┘
                             │
                             ▼
-                    ┌──────────────────┐
-                    │ Rascunho criado  │
-                    └──────────────────┘
+                  ┌────────────────────┐
+                  │  Rascunho Criado   │
+                  └────────────────────┘
 ```
 
 ---
@@ -295,7 +300,7 @@ Upload para WordPress
 Imagem destacada
 ```
 
-A largura máxima utilizada no processamento é de **1080px**, sem aumentar imagens menores e sem cortar a imagem.
+A largura máxima utilizada no processamento é de **1080px**, aumentando imagens menores sem cortar a imagem.
 
 ---
 
@@ -384,7 +389,7 @@ Configuração utilizada:
 ### Root Directory
 
 ```text
-(vazio)
+src
 ```
 
 ### Build Command
@@ -508,7 +513,6 @@ Novas funcionalidades e melhorias podem ser adicionadas ao longo do desenvolvime
 Possíveis melhorias futuras:
 
 * [ ] Sistema de permissões por usuário;
-* [ ] Histórico de matérias processadas;
 * [ ] Dashboard administrativo;
 * [ ] Controle de status das matérias;
 * [ ] Melhorias no processo de revisão;
@@ -524,7 +528,7 @@ Possíveis melhorias futuras:
 
 **Jeanderson Amaral**
 
-Desenvolvedor e responsável pelo desenvolvimento do **M1News AI**.
+Engenheiro de Software e responsável pelo desenvolvimento do **M1News AI**.
 
 Projeto desenvolvido para auxiliar o fluxo de produção de conteúdo do **M1NewsTV**.
 
@@ -535,3 +539,7 @@ Projeto desenvolvido para auxiliar o fluxo de produção de conteúdo do **M1New
 Este projeto é de uso privado e destinado ao ecossistema do M1NewsTV.
 
 A utilização, distribuição ou modificação do código deve ser autorizada pelo responsável pelo projeto.
+
+## Contato:
+Cel: 21 981100393
+E mail: Jeandersonfil@gmail.com
