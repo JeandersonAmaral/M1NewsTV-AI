@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt");
+
 const jwt = require("jsonwebtoken");
+
 const User = require("../models/User");
 
 // ========================================
@@ -71,7 +73,6 @@ async function cadastrarUsuario(req, res) {
                 role: usuario.role
             }
         });
-
     } catch (error) {
         console.error(
             "Erro ao cadastrar usuário:",
@@ -136,18 +137,36 @@ async function login(req, res) {
         }
 
         // ========================================
-        // GERAR TOKEN
+        // DADOS DO USUÁRIO
+        // ========================================
+
+        const payload = {
+            id: usuario._id,
+            username: usuario.username,
+            role: usuario.role
+        };
+
+        // ========================================
+        // GERAR ACCESS TOKEN
         // ========================================
 
         const token = jwt.sign(
-            {
-                id: usuario._id,
-                username: usuario.username,
-                role: usuario.role
-            },
+            payload,
             process.env.JWT_SECRET,
             {
-                expiresIn: "8h"
+                expiresIn: "15m"
+            }
+        );
+
+        // ========================================
+        // GERAR REFRESH TOKEN
+        // ========================================
+
+        const refreshToken = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "30d"
             }
         );
 
@@ -159,13 +178,13 @@ async function login(req, res) {
             sucesso: true,
             mensagem: "Login realizado com sucesso.",
             token,
+            refreshToken,
             usuario: {
                 id: usuario._id,
                 username: usuario.username,
                 role: usuario.role
             }
         });
-
     } catch (error) {
         console.error(
             "Erro no login:",
@@ -180,10 +199,76 @@ async function login(req, res) {
 }
 
 // ========================================
+// RENOVAR ACCESS TOKEN
+// ========================================
+
+async function refresh(req, res) {
+    try {
+        const { refreshToken } = req.body;
+
+        // ========================================
+        // VERIFICAR SE REFRESH TOKEN EXISTE
+        // ========================================
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: "Refresh token não informado."
+            });
+        }
+
+        // ========================================
+        // VALIDAR REFRESH TOKEN
+        // ========================================
+
+        const usuario = jwt.verify(
+            refreshToken,
+            process.env.JWT_SECRET
+        );
+
+        // ========================================
+        // GERAR NOVO ACCESS TOKEN
+        // ========================================
+
+        const token = jwt.sign(
+            {
+                id: usuario.id,
+                username: usuario.username,
+                role: usuario.role
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "15m"
+            }
+        );
+
+        // ========================================
+        // RESPONDER
+        // ========================================
+
+        return res.json({
+            sucesso: true,
+            token
+        });
+    } catch (error) {
+        console.error(
+            "Erro ao renovar token:",
+            error.message
+        );
+
+        return res.status(401).json({
+            sucesso: false,
+            mensagem: "Refresh token inválido ou expirado."
+        });
+    }
+}
+
+// ========================================
 // EXPORTAR
 // ========================================
 
 module.exports = {
     cadastrarUsuario,
-    login
+    login,
+    refresh
 };

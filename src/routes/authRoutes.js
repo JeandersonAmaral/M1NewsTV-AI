@@ -22,4 +22,13 @@ router.post(
     authController.login
 );
 
+// ========================================
+// RENOVAR TOKEN
+// ========================================
+
+router.post(
+    "/refresh",
+    authController.refresh
+);
+
 module.exports = router;

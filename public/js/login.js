@@ -73,12 +73,18 @@ loginForm.addEventListener(
                     "Usuário ou senha inválidos."
                 );
             }
-            // ========================================
+            /// ========================================
             // SALVAR AUTENTICAÇÃO
             // ========================================
+
             localStorage.setItem(
                 "token",
                 data.token
+            );
+
+            localStorage.setItem(
+                "refreshToken",
+                data.refreshToken
             );
 
             localStorage.setItem(
