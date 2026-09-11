@@ -306,7 +306,7 @@ function inicializarIdentificadorDeLinks() {
     estilo.textContent = `
 
         #editor a {
-            color: #2563eb;
+            color: #dc2626;
             text-decoration: underline;
             text-decoration-thickness: 1px;
             text-underline-offset: 2px;
@@ -314,7 +314,7 @@ function inicializarIdentificadorDeLinks() {
         }
 
         #editor a:hover {
-            color: #1d4ed8;
+            color: #b91c1c;
         }
 
         #identificadorLink {
