@@ -47,7 +47,7 @@
             gerarImagemTeste();
 
         console.log(
-            "🖼️ URL da imagem de teste:",
+            "[TESTE] URL da imagem:",
             imagemUrl
         );
 
@@ -102,7 +102,7 @@
         if (!inputs.length) {
 
             console.warn(
-                "🖼️ Nenhum input[type=file] encontrado."
+                "[TESTE] Nenhum input[type=file] encontrado."
             );
 
             return false;
@@ -191,23 +191,23 @@
             );
 
             console.log(
-                "🖼️ Imagem colocada no input:",
+                "[TESTE] Imagem colocada no input:",
                 inputImagem
             );
 
             console.log(
-                "🖼️ Arquivo:",
+                "[TESTE] Arquivo:",
                 arquivo.name
             );
 
             console.log(
-                "🖼️ Tamanho:",
+                "[TESTE] Tamanho:",
                 arquivo.size,
                 "bytes"
             );
 
             console.log(
-                "🖼️ Tipo:",
+                "[TESTE] Tipo:",
                 arquivo.type
             );
 
@@ -216,7 +216,7 @@
         } catch (error) {
 
             console.error(
-                "Erro ao colocar imagem no input:",
+                "[TESTE] Erro ao colocar imagem no input:",
                 error
             );
 
@@ -318,7 +318,7 @@
 
         area.innerHTML = `
             <div class="mb-2 text-sm font-semibold text-slate-700">
-                🖼️ Imagem de teste
+                Imagem de teste
             </div>
 
             <img
@@ -353,7 +353,7 @@
         if (!urlInput || !gerarButton) {
 
             console.warn(
-                "Modo TESTE: elementos #url ou #gerar não encontrados."
+                "[TESTE] Elementos #url ou #gerar não encontrados."
             );
 
             return;
@@ -458,15 +458,15 @@
                 );
 
                 console.log(
-                    "🧪 MODO TESTE ATIVADO"
+                    "[TESTE] Modo de teste ativado."
                 );
 
                 console.log(
-                    "Nenhuma requisição à IA foi realizada."
+                    "[TESTE] Nenhuma requisição à IA foi realizada."
                 );
 
                 console.log(
-                    "Nenhuma matéria real foi processada."
+                    "[TESTE] Nenhuma matéria real foi processada."
                 );
 
                 console.log(
@@ -720,7 +720,7 @@
                     materiaTeste.alt_text;
 
                 console.log(
-                    "ALT TEXT:",
+                    "[TESTE] Alt text:",
                     materiaTeste.alt_text
                 );
 
@@ -732,14 +732,14 @@
                 try {
 
                     console.log(
-                        "🖼️ Buscando imagem aleatória..."
+                        "[TESTE] Buscando imagem aleatória..."
                     );
 
                     const imagem =
                         await baixarImagemTeste();
 
                     console.log(
-                        "🖼️ Imagem encontrada:",
+                        "[TESTE] Imagem encontrada:",
                         imagem.url
                     );
 
@@ -759,7 +759,7 @@
                     } else {
 
                         console.warn(
-                            "⚠️ Função de imagem do modo teste não encontrada."
+                            "[TESTE] Função de imagem do modo teste não encontrada."
                         );
 
                     }
@@ -793,13 +793,13 @@
                     };
 
                     console.log(
-                        "✅ Imagem pronta para envio."
+                        "[TESTE] Imagem pronta para envio."
                     );
 
                 } catch (error) {
 
                     console.error(
-                        "❌ Erro ao carregar imagem de teste:",
+                        "[TESTE] Erro ao carregar imagem de teste:",
                         error
                     );
 
@@ -818,12 +818,12 @@
                 if (autorSelect) {
 
                     console.log(
-                        "Autor selecionado:",
+                        "[TESTE] Autor selecionado:",
                         autorSelect.value
                     );
 
                     console.log(
-                        "Nome do autor:",
+                        "[TESTE] Nome do autor:",
                         autorSelect.selectedOptions[0]
                             ?.textContent
                     );
@@ -850,11 +850,11 @@
 
 
                 console.log(
-                    "🧪 Matéria de teste carregada."
+                    "[TESTE] Matéria de teste carregada."
                 );
 
                 console.log(
-                    "🖼️ Imagem de teste carregada."
+                    "[TESTE] Imagem de teste carregada."
                 );
 
             },
@@ -863,11 +863,11 @@
 
 
         console.log(
-            "🧪 Modo TESTE disponível."
+            "[TESTE] Modo de teste disponível."
         );
 
         console.log(
-            'Digite "TESTE" na caixa de URL e clique em GERAR.'
+            '[TESTE] Digite "TESTE" na caixa de URL e clique em GERAR.'
         );
 
     }
