@@ -249,6 +249,25 @@ const urlInput =
 const gerarButton =
     document.getElementById("gerar");
 
+// ========================================
+// ENTER NO CAMPO DE URL
+// ========================================
+
+urlInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            gerarButton.click();
+
+        }
+
+    }
+);
+
 const loading =
     document.getElementById("loading");
 
