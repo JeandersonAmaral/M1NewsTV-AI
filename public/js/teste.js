@@ -390,7 +390,10 @@
 
                 <p>
                     A matéria de teste permite verificar os campos de título,
-                    descrição, subtítulo, conteúdo, tags, categorias e SEO.
+                    descrição, subtítulo, conteúdo, tags, categorias e
+                    <a href="https://m1newstv.com">
+                        SEO.
+                    </a>
                 </p>
 
                 <p>
