@@ -588,10 +588,10 @@ async function enviarImagemParaWordPress(
 }
 
 // ========================================
-// CRIAR RASCUNHO
+// CRIAR MATÉRIA 
 // ========================================
 
-async function criarRascunho(materia) {
+async function enviarMateriaParaWordPress(materia) {
 
     const headers =
         getJsonHeaders();
@@ -601,8 +601,15 @@ async function criarRascunho(materia) {
             materia.autorId ?? AUTOR_PADRAO
         );
 
+    const destino =
+        materia.destino === "publish"
+            ? "publish"
+            : "draft";
+
     logger.info(
-        `Criando rascunho: ${materia.titulo}`
+        destino === "publish"
+            ? `Publicando post: ${materia.titulo}`
+            : `Criando rascunho: ${materia.titulo}`
     );
 
     // ========================================
@@ -696,7 +703,7 @@ async function criarRascunho(materia) {
                 error.message
             );
 
-            // O rascunho continua sendo criado.
+            // O post continua sendo criado.
         }
     }
 
@@ -719,7 +726,7 @@ async function criarRascunho(materia) {
             materia.slug || "",
 
         status:
-            "draft",
+            destino,
 
         author:
             autorId,
@@ -789,13 +796,19 @@ async function criarRascunho(materia) {
     if (!response.ok) {
 
         logger.error(
-            "WordPress recusou a criação do rascunho:",
+            destino === "publish"
+                ? "WordPress recusou a publicação do post:"
+                : "WordPress recusou a criação do rascunho:",
             data
         );
 
         throw new Error(
             data.message ||
-            "Não foi possível criar o rascunho no WordPress."
+            (
+                destino === "publish"
+                    ? "Não foi possível publicar o post no WordPress."
+                    : "Não foi possível criar o rascunho no WordPress."
+            )
         );
     }
 
@@ -804,18 +817,21 @@ async function criarRascunho(materia) {
     // ========================================
 
     logger.info(
-        `Rascunho criado com sucesso. ID: ${data.id}`
+        destino === "publish"
+            ? `Post publicado com sucesso. ID ${data.id}`
+            : `Rascunho criado com sucesso. ID ${data.id}`
     );
 
     return data;
 }
+
 
 // ========================================
 // EXPORTAR
 // ========================================
 
 module.exports = {
-    criarRascunho,
+    enviarMateriaParaWordPress,
     baixarImagem,
     obterAutoresPermitidos
 };

@@ -393,7 +393,26 @@
             </section>
 
             <!-- AÇÕES -->
-            <section class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <section class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+                <div class="flex items-center gap-2">
+
+                    <label for="destino" class="text-sm font-semibold text-slate-700">
+                        Destino:
+                    </label>
+
+                    <select id="destino"
+                        class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+                        <option value="draft">
+                            Rascunho
+                        </option>
+
+                        <option value="publish">
+                            Post
+                        </option>
+                    </select>
+
+                </div>
 
                 <button id="limpar" type="button"
                     class="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50">
@@ -402,7 +421,7 @@
 
                 <button id="enviar" type="button"
                     class="rounded-xl bg-slate-950 px-7 py-3 font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">
-                    Enviar para rascunho
+                    Enviar
                 </button>
 
             </section>

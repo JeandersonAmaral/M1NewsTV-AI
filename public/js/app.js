@@ -316,9 +316,6 @@ const limparButton =
 const enviarButton =
     document.getElementById("enviar");
 
-const autorSelect =
-    document.getElementById("autor");
-
 const previewImagemContainer =
     document.getElementById(
         "previewImagemContainer"
@@ -333,6 +330,12 @@ const tamanhoImagem =
     document.getElementById(
         "tamanhoImagem"
     );
+    
+const autorSelect =
+    document.getElementById("autor");
+    
+const destinoSelect =
+    document.getElementById("destino");
 
 // ========================================
 // IMAGEM DA MATÉRIA ORIGINAL
@@ -1121,6 +1124,9 @@ enviarButton.addEventListener(
         const autorId =
             Number(autorSelect.value);
 
+        const destino =
+            destinoSelect.value;
+
         // ========================================
         // ALT TEXT
         // ========================================
@@ -1194,15 +1200,14 @@ enviarButton.addEventListener(
         // CONFIRMAÇÃO
         // ========================================
 
-        const confirmar =
-            confirm(
-                "Deseja enviar esta matéria para o WordPress como rascunho?"
-            );
+        const confirmar = confirm(
+            destino === "publish"
+                ? "Deseja publicar esta matéria no WordPress?"
+                : "Deseja enviar esta matéria para o WordPress como rascunho?"
+        );
 
         if (!confirmar) {
-
             return;
-
         }
 
         // ========================================
@@ -1249,6 +1254,8 @@ enviarButton.addEventListener(
 
                             autorId,
 
+                            destino,
+
                             tags,
 
                             categorias:
@@ -1287,7 +1294,7 @@ enviarButton.addEventListener(
 
                 throw new Error(
                     data.mensagem ||
-                    "Erro ao criar o rascunho."
+                    "Erro ao enviar a matéria."
                 );
 
             }
@@ -1296,8 +1303,13 @@ enviarButton.addEventListener(
             // SUCESSO
             // ========================================
 
+            const foiPublicado =
+                destino === "publish";
+
             enviarButton.textContent =
-                "Rascunho criado ✓";
+                foiPublicado
+                    ? "Post publicado ✓"
+                    : "Rascunho criado ✓";
 
             enviarButton.classList.remove(
                 "bg-slate-950",
@@ -1310,7 +1322,7 @@ enviarButton.addEventListener(
             );
 
             // ========================================
-            // LINK PARA O RASCUNHO
+            // LINK PARA O WORDPRESS
             // ========================================
 
             const linkExistente =
@@ -1342,7 +1354,9 @@ enviarButton.addEventListener(
                 "noopener noreferrer";
 
             abrirRascunho.textContent =
-                "Abrir rascunho no WordPress →";
+                foiPublicado
+                    ? "Abrir post no WordPress →"
+                    : "Abrir rascunho no WordPress →";
 
             abrirRascunho.className =
                 "inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50";
@@ -1356,14 +1370,15 @@ enviarButton.addEventListener(
             // ========================================
 
             alert(
-                `Rascunho criado com sucesso!\n\n` +
-                `ID: ${data.id}`
+                foiPublicado
+                    ? `Post publicado com sucesso!\n\nID: ${data.id}`
+                    : `Rascunho criado com sucesso!\n\nID: ${data.id}`
             );
 
         } catch (error) {
 
             console.error(
-                "Erro ao enviar rascunho:",
+                "Erro ao enviar matéria:",
                 error
             );
 
@@ -1386,6 +1401,7 @@ enviarButton.addEventListener(
 // ========================================
 // LIMPAR
 // ========================================
+
 
 limparButton.addEventListener(
     "click",
@@ -1420,6 +1436,8 @@ limparButton.addEventListener(
         tagsContainer.innerHTML = "";
 
         autorSelect.value = "58";
+
+        destinoSelect.value = "draft";
 
         // ========================================
         // LIMPAR IMAGEM
@@ -1466,7 +1484,7 @@ limparButton.addEventListener(
         atualizarContadorMeta();
 
         // ========================================
-        // REMOVER LINK DO RASCUNHO
+        // REMOVER LINK DO WORDPRESS
         // ========================================
 
         const abrirRascunho =
@@ -1488,7 +1506,7 @@ limparButton.addEventListener(
             false;
 
         enviarButton.textContent =
-            "Enviar para rascunho";
+            "Enviar";
 
         enviarButton.classList.remove(
             "bg-emerald-600",
@@ -1522,6 +1540,8 @@ limparButton.addEventListener(
 
     }
 );
+
+
 
 // ========================================
 // INICIALIZAÇÃO

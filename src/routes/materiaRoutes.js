@@ -1,34 +1,49 @@
 const express = require("express");
 
 const {
+
     gerarMateria,
-    criarRascunho,
+
+    enviarMateria,
+
     testarWordPress,
+
     listarAutores
+
 } = require("../controllers/materiaController");
 
-const autenticar = require("../middleware/authMiddleware");
+const autenticar =
+    require("../middleware/authMiddleware");
 
-const router = express.Router();
+const router =
+    express.Router();
 
 // ========================================
 // GERAR MATÉRIA
 // ========================================
 
 router.post(
+
     "/materias",
+
     autenticar,
+
     gerarMateria
+
 );
 
 // ========================================
-// ENVIAR MATÉRIA PARA RASCUNHO
+// ENVIAR MATÉRIA
 // ========================================
 
 router.post(
+
     "/materias/rascunho",
+
     autenticar,
-    criarRascunho
+
+    enviarMateria
+
 );
 
 // ========================================
@@ -36,9 +51,13 @@ router.post(
 // ========================================
 
 router.get(
+
     "/autores",
+
     autenticar,
+
     listarAutores
+
 );
 
 // ========================================
@@ -46,9 +65,13 @@ router.get(
 // ========================================
 
 router.get(
+
     "/teste-wordpress",
+
     autenticar,
+
     testarWordPress
+
 );
 
 module.exports = router;
