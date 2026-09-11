@@ -3,7 +3,8 @@ const express = require("express");
 const {
     gerarMateria,
     criarRascunho,
-    testarWordPress
+    testarWordPress,
+    listarAutores
 } = require("../controllers/materiaController");
 
 const autenticar = require("../middleware/authMiddleware");
@@ -28,6 +29,16 @@ router.post(
     "/materias/rascunho",
     autenticar,
     criarRascunho
+);
+
+// ========================================
+// AUTORES PERMITIDOS
+// ========================================
+
+router.get(
+    "/autores",
+    autenticar,
+    listarAutores
 );
 
 // ========================================

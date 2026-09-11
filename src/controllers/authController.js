@@ -74,7 +74,7 @@ async function cadastrarUsuario(req, res) {
             }
         });
     } catch (error) {
-        console.error(
+        logger.error(
             "Erro ao cadastrar usuário:",
             error
         );
@@ -186,7 +186,7 @@ async function login(req, res) {
             }
         });
     } catch (error) {
-        console.error(
+        logger.error(
             "Erro no login:",
             error
         );
@@ -251,7 +251,7 @@ async function refresh(req, res) {
             token
         });
     } catch (error) {
-        console.error(
+        logger.error(
             "Erro ao renovar token:",
             error.message
         );
@@ -274,7 +274,7 @@ async function logout(req, res) {
             mensagem: "Logout realizado com sucesso."
         });
     } catch (error) {
-        console.error(
+        logger.error(
             "Erro ao realizar logout:",
             error
         );

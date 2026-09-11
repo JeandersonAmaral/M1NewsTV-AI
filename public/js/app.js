@@ -30,15 +30,19 @@ function sair() {
 // BOTÃO SAIR
 // ========================================
 
-const sairButton = document.getElementById("sair");
+const sairButton =
+    document.getElementById("sair");
 
 if (sairButton) {
 
-    sairButton.addEventListener("click", () => {
+    sairButton.addEventListener(
+        "click",
+        () => {
 
-        sair();
+            sair();
 
-    });
+        }
+    );
 
 }
 
@@ -61,23 +65,31 @@ async function renovarToken() {
 
     try {
 
-        const response = await fetch(
-            "/api/auth/refresh",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    refreshToken
-                })
-            }
-        );
+        const response =
+            await fetch(
+                "/api/auth/refresh",
+                {
+                    method: "POST",
 
-        const data = await response.json();
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-        if (!response.ok || !data.sucesso || !data.token) {
+                    body: JSON.stringify({
+                        refreshToken
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.sucesso ||
+            !data.token
+        ) {
 
             throw new Error(
                 data.mensagem ||
@@ -86,7 +98,8 @@ async function renovarToken() {
 
         }
 
-        token = data.token;
+        token =
+            data.token;
 
         localStorage.setItem(
             "token",
@@ -142,10 +155,11 @@ async function fetchAutenticado(
 
     };
 
-    let response = await fetch(
-        url,
-        opcoesComToken
-    );
+    let response =
+        await fetch(
+            url,
+            opcoesComToken
+        );
 
     // ========================================
     // TOKEN EXPIRADO
@@ -181,10 +195,11 @@ async function fetchAutenticado(
 
         };
 
-        response = await fetch(
-            url,
-            novasOpcoes
-        );
+        response =
+            await fetch(
+                url,
+                novasOpcoes
+            );
 
     }
 
@@ -196,35 +211,33 @@ async function fetchAutenticado(
 // RENOVAÇÃO AUTOMÁTICA DO TOKEN
 // ========================================
 
-// O access token atual dura 15 minutos.
-// Renovamos automaticamente antes disso.
+let intervaloRefresh =
+    setInterval(
 
-let intervaloRefresh = setInterval(
+        async () => {
 
-    async () => {
+            const refreshToken =
+                localStorage.getItem(
+                    "refreshToken"
+                );
 
-        const refreshToken =
-            localStorage.getItem(
-                "refreshToken"
-            );
+            if (!refreshToken) {
 
-        if (!refreshToken) {
+                clearInterval(
+                    intervaloRefresh
+                );
 
-            clearInterval(
-                intervaloRefresh
-            );
+                return;
 
-            return;
+            }
 
-        }
+            await renovarToken();
 
-        await renovarToken();
+        },
 
-    },
+        10 * 60 * 1000
 
-    10 * 60 * 1000
-
-);
+    );
 
 // ========================================
 // ELEMENTOS
@@ -284,20 +297,40 @@ const limparButton =
 const enviarButton =
     document.getElementById("enviar");
 
+const autorSelect =
+    document.getElementById("autor");
+
 const previewImagemContainer =
-    document.getElementById("previewImagemContainer");
+    document.getElementById(
+        "previewImagemContainer"
+    );
 
 const previewImagem =
-    document.getElementById("previewImagem");
+    document.getElementById(
+        "previewImagem"
+    );
 
 const tamanhoImagem =
-    document.getElementById("tamanhoImagem");
+    document.getElementById(
+        "tamanhoImagem"
+    );
 
 // ========================================
 // IMAGEM DA MATÉRIA ORIGINAL
 // ========================================
 
 let imagemMateria = null;
+
+// ========================================
+// DISPONIBILIZAR IMAGEM PARA MODO TESTE
+// ========================================
+
+window.definirImagemMateriaTeste =
+    function (url) {
+
+        imagemMateria = url;
+
+    };
 
 // ========================================
 // ALT TEXT DA IMAGEM
@@ -445,28 +478,32 @@ function renderizarCategorias() {
 
     categoriasContainer.innerHTML = "";
 
-    categorias.forEach(categoria => {
+    categorias.forEach(
+        categoria => {
 
-        criarCheckboxCategoria(
-            categoria.nome,
-            true
-        );
+            criarCheckboxCategoria(
+                categoria.nome,
+                true
+            );
 
-        if (categoria.filhos) {
+            if (categoria.filhos) {
 
-            categoria.filhos.forEach(filho => {
+                categoria.filhos.forEach(
+                    filho => {
 
-                criarCheckboxCategoria(
-                    filho,
-                    false,
-                    categoria.nome
+                        criarCheckboxCategoria(
+                            filho,
+                            false,
+                            categoria.nome
+                        );
+
+                    }
                 );
 
-            });
+            }
 
         }
-
-    });
+    );
 
 }
 
@@ -502,7 +539,9 @@ function criarCheckboxCategoria(
 
     `;
 
-    categoriasContainer.appendChild(label);
+    categoriasContainer.appendChild(
+        label
+    );
 
 }
 
@@ -517,14 +556,16 @@ function marcarCategorias(categoriasIA) {
             'input[type="checkbox"]'
         );
 
-    checkboxes.forEach(checkbox => {
+    checkboxes.forEach(
+        checkbox => {
 
-        checkbox.checked =
-            categoriasIA.includes(
-                checkbox.value
-            );
+            checkbox.checked =
+                categoriasIA.includes(
+                    checkbox.value
+                );
 
-    });
+        }
+    );
 
 }
 
@@ -536,11 +577,13 @@ function renderizarTags(tags) {
 
     tagsContainer.innerHTML = "";
 
-    tags.forEach(tag => {
+    tags.forEach(
+        tag => {
 
-        adicionarTagNaTela(tag);
+            adicionarTagNaTela(tag);
 
-    });
+        }
+    );
 
 }
 
@@ -555,14 +598,17 @@ function adicionarTagNaTela(tag) {
     const texto =
         document.createElement("span");
 
-    texto.textContent = tag;
+    texto.textContent =
+        tag;
 
     const remover =
         document.createElement("button");
 
-    remover.type = "button";
+    remover.type =
+        "button";
 
-    remover.textContent = "×";
+    remover.textContent =
+        "×";
 
     remover.className =
         "font-bold text-slate-400 hover:text-red-600";
@@ -576,11 +622,17 @@ function adicionarTagNaTela(tag) {
         }
     );
 
-    elemento.appendChild(texto);
+    elemento.appendChild(
+        texto
+    );
 
-    elemento.appendChild(remover);
+    elemento.appendChild(
+        remover
+    );
 
-    tagsContainer.appendChild(elemento);
+    tagsContainer.appendChild(
+        elemento
+    );
 
 }
 
@@ -660,6 +712,111 @@ metaDescricaoInput.addEventListener(
 );
 
 // ========================================
+// CARREGAR AUTORES
+// ========================================
+
+async function carregarAutores() {
+
+    if (!autorSelect) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetchAutenticado(
+                "/api/autores"
+            );
+
+        if (!response) {
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.sucesso
+        ) {
+
+            throw new Error(
+                data.mensagem ||
+                "Não foi possível carregar os autores."
+            );
+
+        }
+
+        if (
+            !Array.isArray(data.autores)
+        ) {
+
+            throw new Error(
+                "O servidor não retornou uma lista de autores válida."
+            );
+
+        }
+
+        autorSelect.innerHTML = "";
+
+        data.autores.forEach(
+            autor => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    autor.id;
+
+                option.textContent =
+                    autor.name;
+
+                if (
+                    Number(autor.id) === 58
+                ) {
+
+                    option.selected =
+                        true;
+
+                }
+
+                autorSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+        if (
+            data.autores.length === 0
+        ) {
+
+            console.warn(
+                "Nenhum autor permitido foi retornado pelo WordPress."
+            );
+
+            autorSelect.innerHTML =
+                '<option value="58">M1NewsTV AI</option>';
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar autores:",
+            error
+        );
+
+        autorSelect.innerHTML =
+            '<option value="58">M1NewsTV AI</option>';
+
+    }
+
+}
+
+// ========================================
 // GERAR MATÉRIA
 // ========================================
 
@@ -682,7 +839,8 @@ gerarButton.addEventListener(
 
         }
 
-        gerarButton.disabled = true;
+        gerarButton.disabled =
+            true;
 
         loading.classList.remove(
             "hidden"
@@ -705,7 +863,7 @@ gerarButton.addEventListener(
         materiaAltText = "";
 
         // ========================================
-        // LIMPAR PREVIEW DA MATÉRIA ANTERIOR
+        // LIMPAR PREVIEW
         // ========================================
 
         previewImagem.src = "";
@@ -716,7 +874,8 @@ gerarButton.addEventListener(
             "hidden"
         );
 
-        enviarButton.disabled = false;
+        enviarButton.disabled =
+            false;
 
         enviarButton.textContent =
             "Enviar para rascunho";
@@ -773,11 +932,6 @@ gerarButton.addEventListener(
                 data.materiaOriginal?.imagem ||
                 null;
 
-            console.log(
-                "Imagem encontrada:",
-                imagemMateria
-            );
-
             // ========================================
             // PREVIEW DA IMAGEM
             // ========================================
@@ -787,12 +941,13 @@ gerarButton.addEventListener(
                 previewImagem.src =
                     imagemMateria;
 
-                previewImagem.onload = () => {
+                previewImagem.onload =
+                    () => {
 
-                    tamanhoImagem.textContent =
-                        `Dimensões: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px`;
+                        tamanhoImagem.textContent =
+                            `Dimensões: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px`;
 
-                };
+                    };
 
                 previewImagemContainer.classList.remove(
                     "hidden"
@@ -811,16 +966,11 @@ gerarButton.addEventListener(
             }
 
             // ========================================
-            // ALT TEXT GERADO PELA IA
+            // ALT TEXT
             // ========================================
 
             materiaAltText =
                 materia.alt_text || "";
-
-            console.log(
-                "ALT TEXT recebido da IA:",
-                materiaAltText
-            );
 
             // ========================================
             // CAMPOS
@@ -888,7 +1038,10 @@ gerarButton.addEventListener(
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Erro ao gerar matéria:",
+                error
+            );
 
             alert(
                 "Erro ao gerar matéria:\n\n" +
@@ -897,7 +1050,8 @@ gerarButton.addEventListener(
 
         } finally {
 
-            gerarButton.disabled = false;
+            gerarButton.disabled =
+                false;
 
             loading.classList.add(
                 "hidden"
@@ -945,6 +1099,9 @@ enviarButton.addEventListener(
         const meta_descricao =
             metaDescricaoInput.value.trim();
 
+        const autorId =
+            Number(autorSelect.value);
+
         // ========================================
         // ALT TEXT
         // ========================================
@@ -958,7 +1115,9 @@ enviarButton.addEventListener(
 
         const tags =
             Array.from(
-                tagsContainer.querySelectorAll("span")
+                tagsContainer.querySelectorAll(
+                    "span"
+                )
             )
                 .map(
                     elemento =>
@@ -1031,7 +1190,8 @@ enviarButton.addEventListener(
         // ESTADO DO BOTÃO
         // ========================================
 
-        enviarButton.disabled = true;
+        enviarButton.disabled =
+            true;
 
         const textoOriginal =
             enviarButton.textContent;
@@ -1040,34 +1200,6 @@ enviarButton.addEventListener(
             "Enviando...";
 
         try {
-
-            console.log(
-                "Enviando matéria para o WordPress..."
-            );
-
-            console.log(
-                "Tags:",
-                tags
-            );
-
-            console.log(
-                "Categorias:",
-                categoriasSelecionadas
-            );
-
-            console.log(
-                "Imagem:",
-                imagemMateria
-            );
-
-            console.log(
-                "ALT TEXT:",
-                alt_text
-            );
-
-            // ========================================
-            // ENVIAR PARA SERVIDOR
-            // ========================================
 
             const response =
                 await fetchAutenticado(
@@ -1096,17 +1228,17 @@ enviarButton.addEventListener(
 
                             meta_descricao,
 
+                            autorId,
+
                             tags,
 
                             categorias:
                                 categoriasSelecionadas,
 
-                            // IMAGEM DA MATÉRIA
                             imagem:
                                 imagemMateria ||
                                 null,
 
-                            // ALT TEXT GERADO PELA IA
                             alt_text:
                                 alt_text ||
                                 ""
@@ -1145,11 +1277,6 @@ enviarButton.addEventListener(
             // SUCESSO
             // ========================================
 
-            console.log(
-                "Rascunho criado:",
-                data
-            );
-
             enviarButton.textContent =
                 "Rascunho criado ✓";
 
@@ -1179,7 +1306,9 @@ enviarButton.addEventListener(
             }
 
             const abrirRascunho =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
             abrirRascunho.id =
                 "abrirRascunho";
@@ -1224,7 +1353,8 @@ enviarButton.addEventListener(
                 error.message
             );
 
-            enviarButton.disabled = false;
+            enviarButton.disabled =
+                false;
 
             enviarButton.textContent =
                 textoOriginal;
@@ -1270,6 +1400,8 @@ limparButton.addEventListener(
 
         tagsContainer.innerHTML = "";
 
+        autorSelect.value = "58";
+
         // ========================================
         // LIMPAR IMAGEM
         // ========================================
@@ -1302,7 +1434,8 @@ limparButton.addEventListener(
         checkboxes.forEach(
             checkbox => {
 
-                checkbox.checked = false;
+                checkbox.checked =
+                    false;
 
             }
         );
@@ -1332,7 +1465,8 @@ limparButton.addEventListener(
         // RESTAURAR BOTÃO
         // ========================================
 
-        enviarButton.disabled = false;
+        enviarButton.disabled =
+            false;
 
         enviarButton.textContent =
             "Enviar para rascunho";
@@ -1377,3 +1511,5 @@ limparButton.addEventListener(
 renderizarCategorias();
 
 atualizarContadorMeta();
+
+carregarAutores();

@@ -1,6 +1,9 @@
 const { gerarMateria: gerarMateriaIA } = require("../services/aiService");
 const { extrairMateria } = require("../services/articleExtractor");
-const { criarRascunho: criarRascunhoWordPress } = require("../services/wordpressService");
+const {
+    criarRascunho: criarRascunhoWordPress,
+    obterAutoresPermitidos
+} = require("../services/wordpressService");
 const { validarUrl } = require("../utils/urlValidator");
 const logger = require("../utils/logger");
 // ========================================
@@ -50,6 +53,34 @@ function montarConteudoFinal(
         corpoOriginal,
         fonteHTML
     ].join("\n\n");
+}
+// ========================================
+// LISTAR AUTORES
+// ========================================
+
+async function listarAutores(req, res) {
+    try {
+        const autores =
+            await obterAutoresPermitidos();
+
+        return res.json({
+            sucesso: true,
+            autores
+        });
+
+    } catch (error) {
+        logger.error(
+            "Erro ao buscar autores:",
+            error
+        );
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem:
+                error.message ||
+                "Não foi possível buscar os autores."
+        });
+    }
 }
 // ========================================
 // GERAR MATÉRIA
@@ -159,7 +190,8 @@ async function criarRascunho(req, res) {
         frase_chave,
         meta_descricao,
         imagem,
-        alt_text
+        alt_text,
+        autorId
     } = req.body;
     // ========================================
     // VALIDAR CAMPOS
@@ -199,7 +231,8 @@ async function criarRascunho(req, res) {
                 frase_chave,
                 meta_descricao,
                 imagem,
-                alt_text
+                alt_text,
+                autorId
             });
         // ========================================
         // RETORNAR PARA O FRONTEND
@@ -290,6 +323,7 @@ async function testarWordPress(req, res) {
 module.exports = {
     gerarMateria,
     criarRascunho,
-    testarWordPress
+    testarWordPress,
+    listarAutores
 };
 
