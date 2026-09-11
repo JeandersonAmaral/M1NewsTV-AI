@@ -25,14 +25,14 @@
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-900">
-    <!-- HEADER -->
+    <!-- CABEÇALHO -->
 
     <header class="fixed top-0 left-0 z-50 w-full bg-slate-950 text-white shadow-lg">
 
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
 
             <!-- ======================================== -->
-            <!-- LOGO + INFORMAÇÕES -->
+            <!-- IDENTIDADE -->
             <!-- ======================================== -->
 
             <div class="flex items-center gap-4">
@@ -58,7 +58,7 @@
             </div>
 
             <!-- ======================================== -->
-            <!-- AÇÕES -->
+            <!-- AÇÕES DO USUÁRIO -->
             <!-- ======================================== -->
 
             <div class="flex items-center gap-3">
@@ -79,9 +79,14 @@
         </div>
 
     </header>
-    <!-- CONTEÚDO -->
+
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="mx-auto max-w-7xl px-4 pb-8 pt-40 sm:px-6">
-        <!-- GERAR MATÉRIA -->
+
+        <!-- ======================================== -->
+        <!-- GERAÇÃO DE MATÉRIA -->
+        <!-- ======================================== -->
+
         <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-5">
                 <h2 class="text-xl font-bold">
@@ -91,28 +96,41 @@
                     Insira a URL da matéria que deseja converter em conteúdo para o M1NewsTV.
                 </p>
             </div>
+
             <div class="flex flex-col gap-3 md:flex-row">
+
                 <input type="url" id="url" placeholder="https://exemplo.com/materia"
                     class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+
                 <button id="gerar" type="button"
                     class="rounded-xl bg-slate-950 px-6 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">
                     Gerar conteúdo
                 </button>
+
             </div>
+
             <div id="loading" class="mt-4 hidden items-center gap-3 text-sm text-slate-500">
+
                 <div class="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900"></div>
 
                 <span>
                     Lendo a matéria e preparando o conteúdo...
                 </span>
+
             </div>
 
         </section>
 
-        <!-- RESULTADO -->
+        <!-- ======================================== -->
+        <!-- RESULTADO DA MATÉRIA -->
+        <!-- ======================================== -->
+
         <section id="resultado" class="hidden space-y-6">
 
-            <!-- MATÉRIA -->
+            <!-- ======================================== -->
+            <!-- CONTEÚDO DA MATÉRIA -->
+            <!-- ======================================== -->
+
             <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
                 <div class="border-b border-slate-200 px-6 py-5">
@@ -210,7 +228,41 @@
 
             </section>
 
-            <!-- TAGS + CATEGORIAS -->
+            <!-- ======================================== -->
+            <!-- AUTOR DA MATÉRIA -->
+            <!-- ======================================== -->
+
+            <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold">
+                        Autor
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Selecione o autor que será responsável pela matéria no WordPress.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="autor" class="mb-2 block text-sm font-semibold text-slate-700">
+                        Autor
+                    </label>
+
+                    <select id="autor"
+                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+                        <option value="58">
+                            M1NewsTV AI
+                        </option>
+                    </select>
+                </div>
+
+            </section>
+
+            <!-- ======================================== -->
+            <!-- TAGS E CATEGORIAS -->
+            <!-- ======================================== -->
+
             <div class="grid gap-6 lg:grid-cols-2">
 
                 <!-- TAGS -->
@@ -240,17 +292,20 @@
 
                     </div>
 
-                    <!-- PREVIEW DA IMAGEM -->
+                    <!-- ======================================== -->
+                    <!-- PRÉ-VISUALIZAÇÃO DA IMAGEM -->
+                    <!-- ======================================== -->
+
                     <div id="previewImagemContainer" class="mt-6 hidden">
 
                         <div class="mb-3">
 
                             <h2 class="text-lg font-bold">
-                                Capa da matéria
+                                Capa da matéria (Imagem destacada)
                             </h2>
 
                             <p class="mt-1 text-sm text-slate-500">
-                                Pré-visualização da imagem que será enviada para o WordPress.
+                                Pré-visualização da imagem que será enviada para o WordPress antes da edição.
                             </p>
 
                         </div>
@@ -261,9 +316,11 @@
                                 class="block h-auto w-full object-contain">
 
                         </div>
+
                         <p id="tamanhoImagem" class="mt-2 text-left text-xs text-slate-400">
                             Dimensões: —
                         </p>
+
                     </div>
 
                 </section>
@@ -288,34 +345,11 @@
                 </section>
 
             </div>
-            <!-- AUTOR -->
-            <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-                <div class="mb-5">
-                    <h2 class="text-lg font-bold">
-                        Autor da matéria
-                    </h2>
+            <!-- ======================================== -->
+            <!-- CONFIGURAÇÕES DE SEO -->
+            <!-- ======================================== -->
 
-                    <p class="mt-1 text-sm text-slate-500">
-                        Selecione o autor que será responsável pelo rascunho no WordPress.
-                    </p>
-                </div>
-
-                <div>
-                    <label for="autor" class="mb-2 block text-sm font-semibold text-slate-700">
-                        Autor
-                    </label>
-
-                    <select id="autor"
-                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
-                        <option value="58">
-                            M1NewsTV AI
-                        </option>
-                    </select>
-                </div>
-
-            </section>
-            <!-- SEO -->
             <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
                 <div class="border-b border-slate-200 px-6 py-5">
@@ -344,7 +378,7 @@
 
                 <div class="space-y-6 p-6">
 
-                    <!-- FRASE CHAVE -->
+                    <!-- FRASE-CHAVE -->
                     <div>
 
                         <label for="frase_chave" class="mb-2 block text-sm font-semibold text-slate-700">
@@ -368,7 +402,7 @@
 
                     </div>
 
-                    <!-- META -->
+                    <!-- META DESCRIÇÃO -->
                     <div>
 
                         <div class="mb-2 flex items-center justify-between">
@@ -392,7 +426,10 @@
 
             </section>
 
-            <!-- AÇÕES -->
+            <!-- ======================================== -->
+            <!-- ENVIO DA MATÉRIA -->
+            <!-- ======================================== -->
+
             <section class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
 
                 <div class="flex items-center gap-2">
