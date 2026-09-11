@@ -5,20 +5,10 @@ const WORDPRESS_APP_PASSWORD = process.env.WORDPRESS_APP_PASSWORD;
 const sharp = require("sharp");
 const logger = require("../utils/logger");
 
-// ========================================
-// AUTORES PERMITIDOS
-// ========================================
-
-const AUTORES_PERMITIDOS = [
-    57, // Cristiano Magalhães
-    26, // Francisco Carvalho
-    48, // Jeanderson Amaral
-    27, // Gabriella Carvalho
-    58, // M1NewsTV AI
-    1,  // M1NewsTV
-];
-
-const AUTOR_PADRAO = 58;
+const {
+    AUTORES_PERMITIDOS,
+    AUTOR_PADRAO
+} = require("./autorService");
 
 // ========================================
 // AUTENTICAÇÃO
@@ -829,3 +819,4 @@ module.exports = {
     baixarImagem,
     obterAutoresPermitidos
 };
+
