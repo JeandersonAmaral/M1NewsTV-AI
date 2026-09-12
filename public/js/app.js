@@ -113,7 +113,7 @@ gerarButton.addEventListener(
             false;
 
         enviarButton.textContent =
-            "Enviar para rascunho";
+            "Enviar";
 
         try {
 
