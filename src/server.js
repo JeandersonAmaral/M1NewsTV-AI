@@ -5,6 +5,7 @@ const materiaRoutes = require("./routes/materiaRoutes");
 const authRoutes = require("./routes/authRoutes");
 const logger = require("./utils/logger");
 const { conectarMongoDB } = require("./config/database");
+const errorHandler = require("./middleware/errorHandler");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -48,6 +49,15 @@ app.use(
     "/api/auth",
     authRoutes
 );
+
+// ========================================
+// TRATAMENTO GLOBAL DE ERROS
+// ========================================
+
+app.use(
+    errorHandler
+);
+
 
 // ========================================
 // INICIAR SERVIDOR

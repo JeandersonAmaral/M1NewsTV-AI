@@ -8,7 +8,7 @@ const User = require("../models/User");
 // CADASTRAR USUÁRIO
 // ========================================
 
-async function cadastrarUsuario(req, res) {
+async function cadastrarUsuario(req, res, next) {
     try {
         const { username, password } = req.body;
 
@@ -73,16 +73,11 @@ async function cadastrarUsuario(req, res) {
                 role: usuario.role
             }
         });
-    } catch (error) {
-        logger.error(
-            "Erro ao cadastrar usuário:",
-            error
-        );
 
-        return res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro interno ao cadastrar usuário."
-        });
+    } catch (error) {
+
+        next(error);
+
     }
 }
 
@@ -90,7 +85,7 @@ async function cadastrarUsuario(req, res) {
 // LOGIN
 // ========================================
 
-async function login(req, res) {
+async function login(req, res, next) {
     try {
         const { username, password } = req.body;
 
@@ -185,16 +180,11 @@ async function login(req, res) {
                 role: usuario.role
             }
         });
-    } catch (error) {
-        logger.error(
-            "Erro no login:",
-            error
-        );
 
-        return res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro interno ao realizar login."
-        });
+    } catch (error) {
+
+        next(error);
+
     }
 }
 
@@ -250,16 +240,14 @@ async function refresh(req, res) {
             sucesso: true,
             token
         });
+
     } catch (error) {
-        logger.error(
-            "Erro ao renovar token:",
-            error.message
-        );
 
         return res.status(401).json({
             sucesso: false,
             mensagem: "Refresh token inválido ou expirado."
         });
+
     }
 }
 
@@ -267,22 +255,17 @@ async function refresh(req, res) {
 // LOGOUT
 // ========================================
 
-async function logout(req, res) {
+async function logout(req, res, next) {
     try {
         return res.json({
             sucesso: true,
             mensagem: "Logout realizado com sucesso."
         });
-    } catch (error) {
-        logger.error(
-            "Erro ao realizar logout:",
-            error
-        );
 
-        return res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro interno ao realizar logout."
-        });
+    } catch (error) {
+
+        next(error);
+
     }
 }
 
