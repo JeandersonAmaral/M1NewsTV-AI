@@ -17,39 +17,6 @@
 const limparButton =
     document.getElementById("limpar");
 
-const urlInput =
-    document.getElementById("url");
-
-const tituloInput =
-    document.getElementById("titulo");
-
-const descricaoInput =
-    document.getElementById("descricao");
-
-const subtituloInput =
-    document.getElementById("subtitulo");
-
-const editor =
-    document.getElementById("editor");
-
-const tagsContainer =
-    document.getElementById("tags");
-
-const categoriasContainer =
-    document.getElementById("categorias");
-
-const autorSelect =
-    document.getElementById("autor");
-
-const destinoSelect =
-    document.getElementById("destino");
-
-const enviarButton =
-    document.getElementById("enviar");
-
-const resultado =
-    document.getElementById("resultado");
-
 // ========================================
 // LIMPAR MATÉRIA
 // ========================================

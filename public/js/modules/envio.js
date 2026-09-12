@@ -15,38 +15,14 @@
 // ELEMENTOS
 // ========================================
 
-const enviarButton =
+const botaoEnvio =
     document.getElementById("enviar");
-
-const tituloInput =
-    document.getElementById("titulo");
-
-const descricaoInput =
-    document.getElementById("descricao");
-
-const subtituloInput =
-    document.getElementById("subtitulo");
-
-const editor =
-    document.getElementById("editor");
-
-const tagsContainer =
-    document.getElementById("tags");
-
-const categoriasContainer =
-    document.getElementById("categorias");
-
-const autorSelect =
-    document.getElementById("autor");
-
-const destinoSelect =
-    document.getElementById("destino");
 
 // ========================================
 // ENVIAR PARA O WORDPRESS
 // ========================================
 
-enviarButton.addEventListener(
+botaoEnvio.addEventListener(
     "click",
     async () => {
 
@@ -168,13 +144,13 @@ enviarButton.addEventListener(
         // ESTADO DO BOTÃO
         // ========================================
 
-        enviarButton.disabled =
+        botaoEnvio.disabled =
             true;
 
         const textoOriginal =
-            enviarButton.textContent;
+            botaoEnvio.textContent;
 
-        enviarButton.textContent =
+        botaoEnvio.textContent =
             "Enviando...";
 
         try {
@@ -260,17 +236,17 @@ enviarButton.addEventListener(
             const foiPublicado =
                 destino === "publish";
 
-            enviarButton.textContent =
+            botaoEnvio.textContent =
                 foiPublicado
                     ? "Post publicado ✓"
                     : "Rascunho criado ✓";
 
-            enviarButton.classList.remove(
+            botaoEnvio.classList.remove(
                 "bg-slate-950",
                 "hover:bg-slate-800"
             );
 
-            enviarButton.classList.add(
+            botaoEnvio.classList.add(
                 "bg-emerald-600",
                 "hover:bg-emerald-700"
             );
@@ -315,7 +291,7 @@ enviarButton.addEventListener(
             abrirRascunho.className =
                 "inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50";
 
-            enviarButton.parentElement.appendChild(
+            botaoEnvio.parentElement.appendChild(
                 abrirRascunho
             );
 
@@ -341,13 +317,14 @@ enviarButton.addEventListener(
                 error.message
             );
 
-            enviarButton.disabled =
+            botaoEnvio.disabled =
                 false;
 
-            enviarButton.textContent =
+            botaoEnvio.textContent =
                 textoOriginal;
 
         }
 
     }
 );
+
