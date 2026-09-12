@@ -1,0 +1,353 @@
+// ========================================
+// ENVIO PARA O WORDPRESS
+// ========================================
+//
+// Responsável por:
+// - Coletar os dados atuais da matéria
+// - Coletar tags e categorias
+// - Validar os dados
+// - Confirmar rascunho ou publicação
+// - Enviar a matéria para o WordPress
+// - Exibir o resultado do envio
+// ========================================
+
+// ========================================
+// ELEMENTOS
+// ========================================
+
+const enviarButton =
+    document.getElementById("enviar");
+
+const tituloInput =
+    document.getElementById("titulo");
+
+const descricaoInput =
+    document.getElementById("descricao");
+
+const subtituloInput =
+    document.getElementById("subtitulo");
+
+const editor =
+    document.getElementById("editor");
+
+const tagsContainer =
+    document.getElementById("tags");
+
+const categoriasContainer =
+    document.getElementById("categorias");
+
+const autorSelect =
+    document.getElementById("autor");
+
+const destinoSelect =
+    document.getElementById("destino");
+
+// ========================================
+// ENVIAR PARA O WORDPRESS
+// ========================================
+
+enviarButton.addEventListener(
+    "click",
+    async () => {
+
+        // ========================================
+        // PEGAR DADOS ATUAIS
+        // ========================================
+
+        const titulo =
+            tituloInput.value.trim();
+
+        const descricao =
+            descricaoInput.value.trim();
+
+        const subtitulo =
+            subtituloInput.value.trim();
+
+        const conteudo =
+            editor.innerHTML.trim();
+
+        const slug =
+            slugInput.value.trim();
+
+        const frase_chave =
+            fraseChaveInput.value.trim();
+
+        const meta_descricao =
+            metaDescricaoInput.value.trim();
+
+        const autorId =
+            Number(autorSelect.value);
+
+        const destino =
+            destinoSelect.value;
+
+        // ========================================
+        // ALT TEXT
+        // ========================================
+
+        const alt_text =
+            obterMateriaAltText().trim();
+
+        // ========================================
+        // PEGAR TAGS
+        // ========================================
+
+        const tags =
+            Array.from(
+                tagsContainer.querySelectorAll(
+                    "span"
+                )
+            )
+                .map(
+                    elemento =>
+                        elemento.textContent.trim()
+                )
+                .filter(
+                    tag =>
+                        tag.length > 0
+                );
+
+        // ========================================
+        // PEGAR CATEGORIAS
+        // ========================================
+
+        const categoriasSelecionadas =
+            Array.from(
+                categoriasContainer.querySelectorAll(
+                    'input[type="checkbox"]:checked'
+                )
+            )
+                .map(
+                    checkbox =>
+                        checkbox.value
+                );
+
+        // ========================================
+        // VALIDAÇÃO
+        // ========================================
+
+        if (!titulo) {
+
+            alert(
+                "O título da matéria é obrigatório."
+            );
+
+            tituloInput.focus();
+
+            return;
+
+        }
+
+        if (!conteudo) {
+
+            alert(
+                "O conteúdo da matéria está vazio."
+            );
+
+            editor.focus();
+
+            return;
+
+        }
+
+        // ========================================
+        // CONFIRMAÇÃO
+        // ========================================
+
+        const confirmar = confirm(
+            destino === "publish"
+                ? "Deseja publicar esta matéria no WordPress?"
+                : "Deseja enviar esta matéria para o WordPress como rascunho?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        // ========================================
+        // ESTADO DO BOTÃO
+        // ========================================
+
+        enviarButton.disabled =
+            true;
+
+        const textoOriginal =
+            enviarButton.textContent;
+
+        enviarButton.textContent =
+            "Enviando...";
+
+        try {
+
+            const response =
+                await fetchAutenticado(
+                    "/api/materias/rascunho",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            titulo,
+
+                            descricao,
+
+                            subtitulo,
+
+                            conteudo,
+
+                            slug,
+
+                            frase_chave,
+
+                            meta_descricao,
+
+                            autorId,
+
+                            destino,
+
+                            tags,
+
+                            categorias:
+                                categoriasSelecionadas,
+
+                            imagem:
+                                obterImagemMateria() ||
+                                null,
+
+                            alt_text:
+                                alt_text ||
+                                ""
+
+                        })
+
+                    }
+                );
+
+            if (!response) {
+
+                return;
+
+            }
+
+            const data =
+                await response.json();
+
+            // ========================================
+            // VERIFICAR RESPOSTA
+            // ========================================
+
+            if (
+                !response.ok ||
+                !data.sucesso
+            ) {
+
+                throw new Error(
+                    data.mensagem ||
+                    "Erro ao enviar a matéria."
+                );
+
+            }
+
+            // ========================================
+            // SUCESSO
+            // ========================================
+
+            const foiPublicado =
+                destino === "publish";
+
+            enviarButton.textContent =
+                foiPublicado
+                    ? "Post publicado ✓"
+                    : "Rascunho criado ✓";
+
+            enviarButton.classList.remove(
+                "bg-slate-950",
+                "hover:bg-slate-800"
+            );
+
+            enviarButton.classList.add(
+                "bg-emerald-600",
+                "hover:bg-emerald-700"
+            );
+
+            // ========================================
+            // LINK PARA O WORDPRESS
+            // ========================================
+
+            const linkExistente =
+                document.getElementById(
+                    "abrirRascunho"
+                );
+
+            if (linkExistente) {
+
+                linkExistente.remove();
+
+            }
+
+            const abrirRascunho =
+                document.createElement(
+                    "a"
+                );
+
+            abrirRascunho.id =
+                "abrirRascunho";
+
+            abrirRascunho.href =
+                data.link;
+
+            abrirRascunho.target =
+                "_blank";
+
+            abrirRascunho.rel =
+                "noopener noreferrer";
+
+            abrirRascunho.textContent =
+                foiPublicado
+                    ? "Abrir post no WordPress →"
+                    : "Abrir rascunho no WordPress →";
+
+            abrirRascunho.className =
+                "inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50";
+
+            enviarButton.parentElement.appendChild(
+                abrirRascunho
+            );
+
+            // ========================================
+            // MENSAGEM
+            // ========================================
+
+            alert(
+                foiPublicado
+                    ? `Post publicado com sucesso!\n\nID: ${data.id}`
+                    : `Rascunho criado com sucesso!\n\nID: ${data.id}`
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao enviar matéria:",
+                error
+            );
+
+            alert(
+                "Não foi possível enviar a matéria para o WordPress.\n\n" +
+                error.message
+            );
+
+            enviarButton.disabled =
+                false;
+
+            enviarButton.textContent =
+                textoOriginal;
+
+        }
+
+    }
+);

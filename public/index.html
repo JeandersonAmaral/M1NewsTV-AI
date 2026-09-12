@@ -64,14 +64,14 @@
             <div class="flex items-center gap-3">
 
                 <div
-                    class="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-300">
-                    <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                    Versão de testes
+                    class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-300">
+                    <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                    v2.0 - Beta
                 </div>
 
                 <button id="sair" type="button"
                     class="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white">
-                    Sair
+                    Logout
                 </button>
 
             </div>
@@ -260,7 +260,7 @@
             </section>
 
             <!-- ======================================== -->
-            <!-- TAGS E CATEGORIAS -->
+            <!-- TAGS - CATEGORIAS - IMAGEM -->
             <!-- ======================================== -->
 
             <div class="grid gap-6 lg:grid-cols-2">
@@ -292,9 +292,7 @@
 
                     </div>
 
-                    <!-- ======================================== -->
-                    <!-- PRÉ-VISUALIZAÇÃO DA IMAGEM -->
-                    <!-- ======================================== -->
+                    <!-- IMAGEM -->
 
                     <div id="previewImagemContainer" class="mt-6 hidden">
 
@@ -335,7 +333,7 @@
                         </h2>
 
                         <p class="mt-1 text-sm text-slate-500">
-                            A IA selecionou as categorias sugeridas.
+                            Revise as categorias sugeridas.
                         </p>
 
                     </div>
@@ -435,7 +433,7 @@
                 <div class="flex items-center gap-2">
 
                     <label for="destino" class="text-sm font-semibold text-slate-700">
-                        Destino:
+                        Modo:
                     </label>
 
                     <select id="destino"
@@ -452,7 +450,7 @@
                 </div>
 
                 <button id="limpar" type="button"
-                    class="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50">
+                    class="rounded-xl bg-slate-950 px-7 py-3 font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">
                     Limpar
                 </button>
 
@@ -467,6 +465,16 @@
 
     </main>
 
+    <script src="/js/modules/autenticacao.js"></script>
+    <script src="/js/modules/links.js"></script>
+    <script src="/js/modules/categorias.js"></script>
+    <script src="/js/modules/tags.js"></script>
+    <script src="/js/modules/seo.js"></script>
+    <script src="/js/modules/imagemCapa.js"></script>
+    <script src="/js/modules/autores.js"></script>
+    <script src="/js/modules/envio.js"></script>
+    <script src="/js/modules/limpar.js"></script>
+    <script src="/js/modules/geracao.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/teste.js"></script>
 
