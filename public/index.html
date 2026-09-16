@@ -25,6 +25,7 @@
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-900">
+
     <!-- CABEÇALHO -->
 
     <header class="fixed top-0 left-0 z-50 w-full bg-slate-950 text-white shadow-lg">
@@ -37,7 +38,7 @@
 
             <div class="flex items-center gap-4">
 
-                <img src="images/M1_logo.png" alt="M1NewsTV" class="h-20 ">
+                <img src="images/M1_logo.png" alt="M1NewsTV" class="h-20">
 
                 <div>
 
@@ -65,8 +66,11 @@
 
                 <div
                     class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-300">
+
                     <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+
                     v2.0 - Beta
+
                 </div>
 
                 <button id="sair" type="button"
@@ -81,6 +85,7 @@
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
+
     <main class="mx-auto max-w-7xl px-4 pb-8 pt-40 sm:px-6">
 
         <!-- ======================================== -->
@@ -88,13 +93,17 @@
         <!-- ======================================== -->
 
         <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
             <div class="mb-5">
+
                 <h2 class="text-xl font-bold">
                     Nova matéria
                 </h2>
+
                 <p class="mt-1 text-sm text-slate-500">
                     Insira a URL da matéria que deseja converter em conteúdo para o M1NewsTV.
                 </p>
+
             </div>
 
             <div class="flex flex-col gap-3 md:flex-row">
@@ -138,6 +147,7 @@
                     <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
 
                         <div>
+
                             <h2 class="text-xl font-bold">
                                 Matéria
                             </h2>
@@ -145,12 +155,16 @@
                             <p class="mt-1 text-sm text-slate-500">
                                 Revise o conteúdo antes de enviar para o WordPress.
                             </p>
+
                         </div>
 
                         <span
                             class="inline-flex w-fit items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+
                             <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+
                             Aguardando revisão
+
                         </span>
 
                     </div>
@@ -160,26 +174,41 @@
                 <div class="space-y-6 p-6">
 
                     <!-- TÍTULO -->
+
                     <div>
-                        <label for="titulo" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Título
-                        </label>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label for="titulo" class="block text-sm font-semibold text-slate-700">
+                                Título
+                            </label>
+
+                            <span id="contadorTitulo" class="text-xs text-slate-400">
+                                0 / 60 caracteres
+                            </span>
+
+                        </div>
 
                         <input type="text" id="titulo"
                             class="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg font-semibold outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+
                     </div>
 
                     <!-- DESCRIÇÃO -->
+
                     <div>
+
                         <label for="descricao" class="mb-2 block text-sm font-semibold text-slate-700">
                             Descrição
                         </label>
 
                         <textarea id="descricao" rows="3"
                             class="w-full resize-y rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"></textarea>
+
                     </div>
 
                     <!-- SUBTÍTULO -->
+
                     <div>
 
                         <div class="mb-2 flex items-center justify-between">
@@ -200,6 +229,7 @@
                     </div>
 
                     <!-- CONTEÚDO -->
+
                     <div>
 
                         <div class="mb-2 flex items-center justify-between">
@@ -235,6 +265,7 @@
             <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
                 <div class="mb-5">
+
                     <h2 class="text-lg font-bold">
                         Autor
                     </h2>
@@ -242,19 +273,24 @@
                     <p class="mt-1 text-sm text-slate-500">
                         Selecione o autor que será responsável pela matéria no WordPress.
                     </p>
+
                 </div>
 
                 <div>
+
                     <label for="autor" class="mb-2 block text-sm font-semibold text-slate-700">
                         Autor
                     </label>
 
                     <select id="autor"
                         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+
                         <option value="58">
                             M1NewsTV AI
                         </option>
+
                     </select>
+
                 </div>
 
             </section>
@@ -266,9 +302,11 @@
             <div class="grid gap-6 lg:grid-cols-2">
 
                 <!-- TAGS -->
+
                 <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
                     <div class="mb-5">
+
                         <h2 class="text-lg font-bold">
                             Tags
                         </h2>
@@ -276,6 +314,7 @@
                         <p class="mt-1 text-sm text-slate-500">
                             Revise ou adicione tags à matéria.
                         </p>
+
                     </div>
 
                     <div id="tags" class="mb-4 flex flex-wrap gap-2"></div>
@@ -324,6 +363,7 @@
                 </section>
 
                 <!-- CATEGORIAS -->
+
                 <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
                     <div class="mb-5">
@@ -377,6 +417,7 @@
                 <div class="space-y-6 p-6">
 
                     <!-- FRASE-CHAVE -->
+
                     <div>
 
                         <label for="frase_chave" class="mb-2 block text-sm font-semibold text-slate-700">
@@ -389,6 +430,7 @@
                     </div>
 
                     <!-- SLUG -->
+
                     <div>
 
                         <label for="slug" class="mb-2 block text-sm font-semibold text-slate-700">
@@ -401,6 +443,7 @@
                     </div>
 
                     <!-- META DESCRIÇÃO -->
+
                     <div>
 
                         <div class="mb-2 flex items-center justify-between">
@@ -410,7 +453,7 @@
                             </label>
 
                             <span id="contadorMeta" class="text-xs text-slate-400">
-                                0 caracteres
+                                0 / 160 caracteres
                             </span>
 
                         </div>
@@ -438,6 +481,7 @@
 
                     <select id="destino"
                         class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+
                         <option value="draft">
                             Rascunho
                         </option>
@@ -445,6 +489,7 @@
                         <option value="publish">
                             Post
                         </option>
+
                     </select>
 
                 </div>
@@ -480,3 +525,4 @@
 </body>
 
 </html>
+
