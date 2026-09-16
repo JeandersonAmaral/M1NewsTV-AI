@@ -348,7 +348,7 @@ async function baixarImagem(url) {
             await imagemOrientada
                 .resize({
                     width: 1080,
-                    withoutEnlargement: true,
+                    withoutEnlargement: false,
                     fit: "inside"
                 })
                 .webp({
