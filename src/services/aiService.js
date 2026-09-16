@@ -1,5 +1,7 @@
-const { GoogleGenAI } = require("@google/genai");
-const logger = require("../utils/logger");
+const Groq = require("groq-sdk");
+
+const logger =
+    require("../utils/logger");
 
 const {
     criarPromptMateria,
@@ -7,15 +9,26 @@ const {
     criarPromptNovoTitulo
 } = require("../prompts/materiaPrompts");
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
-});
+// ==================================================
+// CONFIGURAÇÃO DA IA
+// ==================================================
+
+const ia =
+    new Groq({
+        apiKey:
+            process.env.IA_API_KEY
+    });
+
+const modelo =
+    process.env.IA_MODEL ||
+    "openai/gpt-oss-120b";
 
 // ==================================================
 // NORMALIZAR TÍTULO
 // ==================================================
 
 function normalizarTitulo(texto) {
+
     return String(texto || "")
         .toLowerCase()
         .normalize("NFD")
@@ -23,30 +36,38 @@ function normalizarTitulo(texto) {
         .replace(/[^\w\s]/g, "")
         .replace(/\s+/g, " ")
         .trim();
+
 }
 
 // ==================================================
-// LIMPAR RESPOSTA JSON DO GEMINI
+// LIMPAR RESPOSTA JSON
 // ==================================================
 
 function limparJson(texto) {
-    let resposta = String(texto || "").trim();
+
+    let resposta =
+        String(texto || "").trim();
 
     // Remove possíveis blocos Markdown
-    resposta = resposta
-        .replace(/^```json\s*/i, "")
-        .replace(/^```\s*/i, "")
-        .replace(/\s*```$/i, "")
-        .trim();
+    resposta =
+        resposta
+            .replace(/^```json\s*/i, "")
+            .replace(/^```\s*/i, "")
+            .replace(/\s*```$/i, "")
+            .trim();
 
     return resposta;
+
 }
 
 // ==================================================
 // GERAR ALT TEXT ESPECÍFICO
 // ==================================================
 
-async function gerarAltText(titulo, texto) {
+async function gerarAltText(
+    titulo,
+    texto
+) {
 
     const promptAlt =
         criarPromptAltText(
@@ -57,23 +78,25 @@ async function gerarAltText(titulo, texto) {
     try {
 
         logger.info(
-            "Gerando ALT text específico..."
+            "Gerando ALT text específico com IA"
         );
 
         const response =
-            await chamarGemini(
+            await chamarIA(
                 promptAlt
             );
 
         const altText =
-            String(response.text || "")
+            String(
+                response.text || ""
+            )
                 .trim()
                 .replace(/^["']|["']$/g, "");
 
         if (!altText) {
 
             logger.warn(
-                "Gemini não retornou ALT text."
+                "IA não retornou ALT text."
             );
 
             return "";
@@ -96,13 +119,16 @@ async function gerarAltText(titulo, texto) {
         return "";
 
     }
+
 }
 
 // ==================================================
-// FUNÇÃO PARA CHAMAR O GEMINI
+// FUNÇÃO PARA CHAMAR A IA
 // ==================================================
 
-async function chamarGemini(promptAtual) {
+async function chamarIA(
+    promptAtual
+) {
 
     let response;
 
@@ -117,23 +143,55 @@ async function chamarGemini(promptAtual) {
         try {
 
             logger.info(
-                `Enviando para o Gemini (tentativa ${tentativa}/${maxTentativas})...`
+                `Enviando para IA - ${modelo} (tentativa ${tentativa}/${maxTentativas})...`
             );
 
             response =
-                await ai.models.generateContent({
-                    model: "gemini-3.6-flash",
-                    contents: promptAtual,
-                    config: {
-                        responseMimeType: "application/json"
+                await ia.chat.completions.create({
+
+                    model:
+                        modelo,
+
+                    messages: [
+
+                        {
+                            role:
+                                "user",
+
+                            content:
+                                promptAtual
+
+                        }
+
+                    ],
+
+                    response_format: {
+
+                        type:
+                            "json_object"
+
                     }
+
                 });
 
             logger.info(
-                "Gemini respondeu com sucesso."
+                `IA respondeu com sucesso - ${modelo}.`
             );
 
-            return response;
+            // ==========================================
+            // ADAPTAR RESPOSTA PARA O FORMATO
+            // QUE O RESTANTE DO CÓDIGO JÁ UTILIZA
+            // ==========================================
+
+            return {
+
+                text:
+                    response
+                        .choices?.[0]
+                        ?.message
+                        ?.content || ""
+
+            };
 
         } catch (error) {
 
@@ -143,11 +201,17 @@ async function chamarGemini(promptAtual) {
             );
 
             // ==========================================
-            // RETRY PARA ERRO 503
+            // RETRY PARA ERROS TEMPORÁRIOS
             // ==========================================
 
+            const erroTemporario =
+                error.status === 500 ||
+                error.status === 502 ||
+                error.status === 503 ||
+                error.status === 504;
+
             if (
-                error.status === 503 &&
+                erroTemporario &&
                 tentativa < maxTentativas
             ) {
 
@@ -155,7 +219,7 @@ async function chamarGemini(promptAtual) {
                     tentativa * 5000;
 
                 logger.warn(
-                    `Gemini indisponível. Nova tentativa em ${espera / 1000} segundos...`
+                    `IA indisponível. Nova tentativa em ${espera / 1000} segundos...`
                 );
 
                 await new Promise(
@@ -171,15 +235,21 @@ async function chamarGemini(promptAtual) {
                 throw error;
 
             }
+
         }
+
     }
+
 }
 
 // ==================================================
 // GERAR MATÉRIA
 // ==================================================
 
-async function gerarMateria(titulo, texto) {
+async function gerarMateria(
+    titulo,
+    texto
+) {
 
     const prompt =
         criarPromptMateria(
@@ -192,7 +262,7 @@ async function gerarMateria(titulo, texto) {
     // ==================================================
 
     const response =
-        await chamarGemini(
+        await chamarIA(
             prompt
         );
 
@@ -366,7 +436,7 @@ async function gerarMateria(titulo, texto) {
             );
 
         const responseNovoTitulo =
-            await chamarGemini(
+            await chamarIA(
                 promptNovoTitulo
             );
 
@@ -481,6 +551,7 @@ async function gerarMateria(titulo, texto) {
     // ==================================================
 
     return resultado;
+
 }
 
 // ==================================================
@@ -488,5 +559,7 @@ async function gerarMateria(titulo, texto) {
 // ==================================================
 
 module.exports = {
+
     gerarMateria
+
 };

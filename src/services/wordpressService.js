@@ -359,6 +359,10 @@ async function baixarImagem(url) {
         const metadataFinal =
             await sharp(imagemProcessada).metadata();
 
+        logger.info(
+            `Imagem processada: ${metadataOriginal.width}x${metadataOriginal.height} → ${metadataFinal.width}x${metadataFinal.height}`
+        );
+
         return {
             buffer: imagemProcessada,
             contentType: "image/webp",
@@ -835,4 +839,3 @@ module.exports = {
     baixarImagem,
     obterAutoresPermitidos
 };
-
