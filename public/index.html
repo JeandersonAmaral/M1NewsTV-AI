@@ -198,9 +198,17 @@
 
                     <div>
 
-                        <label for="descricao" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Descrição
-                        </label>
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label for="descricao" class="block text-sm font-semibold text-slate-700">
+                                Descrição
+                            </label>
+
+                            <span class="text-xs text-slate-400">
+                                Será exibido junto a imagem destacada na Home
+                            </span>
+
+                        </div>
 
                         <textarea id="descricao" rows="3"
                             class="w-full resize-y rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"></textarea>
@@ -239,7 +247,7 @@
                             </label>
 
                             <span class="text-xs text-slate-400">
-                                Editor visual
+                                Edite o conteúdo da matéria, adicione ou remova imagens, vídeos e links.
                             </span>
 
                         </div>
@@ -277,10 +285,6 @@
                 </div>
 
                 <div>
-
-                    <label for="autor" class="mb-2 block text-sm font-semibold text-slate-700">
-                        Autor
-                    </label>
 
                     <select id="autor"
                         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
@@ -342,7 +346,7 @@
                             </h2>
 
                             <p class="mt-1 text-sm text-slate-500">
-                                Pré-visualização da imagem que será enviada para o WordPress antes da edição.
+                                Pré-visualização da imagem que será enviada para o WordPress.
                             </p>
 
                         </div>
