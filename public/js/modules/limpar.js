@@ -10,12 +10,14 @@
 // - Esconder o resultado
 // ========================================
 
+
 // ========================================
 // ELEMENTOS
 // ========================================
 
 const limparButton =
     document.getElementById("limpar");
+
 
 // ========================================
 // LIMPAR MATÉRIA
@@ -35,6 +37,51 @@ limparButton.addEventListener(
 
         }
 
+
+        // ========================================
+        // VERIFICAR SE A APLICAÇÃO ESTÁ CARREGADA
+        // ========================================
+
+        if (
+            typeof urlInput === "undefined" ||
+            typeof tituloInput === "undefined" ||
+            typeof descricaoInput === "undefined" ||
+            typeof subtituloInput === "undefined" ||
+            typeof editor === "undefined"
+        ) {
+
+            window.location.reload();
+
+            return;
+
+        }
+
+
+        // ========================================
+        // ELEMENTOS DO SEO
+        // ========================================
+
+        const campoFraseChave =
+            document.getElementById(
+                "frase_chave"
+            );
+
+        const campoSlug =
+            document.getElementById(
+                "slug"
+            );
+
+
+        const campoMetaDescricao =
+            document.getElementById(
+                "meta_descricao"
+            );
+
+
+        // ========================================
+        // LIMPAR CAMPOS
+        // ========================================
+
         urlInput.value = "";
 
         tituloInput.value = "";
@@ -45,23 +92,55 @@ limparButton.addEventListener(
 
         editor.innerHTML = "";
 
-        fraseChaveInput.value = "";
 
-        slugInput.value = "";
+        if (campoFraseChave) {
 
-        metaDescricaoInput.value = "";
+            campoFraseChave.value = "";
+
+        }
+
+
+        if (campoSlug) {
+
+            campoSlug.value = "";
+
+        }
+
+
+        if (campoMetaDescricao) {
+
+            campoMetaDescricao.value = "";
+
+        }
+
+
+        // ========================================
+        // LIMPAR TAGS
+        // ========================================
 
         tagsContainer.innerHTML = "";
 
+
+        // ========================================
+        // RESTAURAR AUTOR
+        // ========================================
+
         autorSelect.value = "58";
 
+
+        // ========================================
+        // RESTAURAR DESTINO
+        // ========================================
+
         destinoSelect.value = "draft";
+
 
         // ========================================
         // LIMPAR IMAGEM
         // ========================================
 
         limparImagem();
+
 
         // ========================================
         // LIMPAR CATEGORIAS
@@ -81,11 +160,30 @@ limparButton.addEventListener(
             }
         );
 
+
         // ========================================
-        // LIMPAR META
+        // ATUALIZAR CONTADORES
         // ========================================
 
-        atualizarContadorMeta();
+        if (
+            typeof window.atualizarContadorTitulo ===
+            "function"
+        ) {
+
+            window.atualizarContadorTitulo();
+
+        }
+
+
+        if (
+            typeof window.atualizarContadorMeta ===
+            "function"
+        ) {
+
+            window.atualizarContadorMeta();
+
+        }
+
 
         // ========================================
         // REMOVER LINK DO WORDPRESS
@@ -102,6 +200,7 @@ limparButton.addEventListener(
 
         }
 
+
         // ========================================
         // RESTAURAR BOTÃO
         // ========================================
@@ -112,15 +211,18 @@ limparButton.addEventListener(
         enviarButton.textContent =
             "Enviar";
 
+
         enviarButton.classList.remove(
             "bg-emerald-600",
             "hover:bg-emerald-700"
         );
 
+
         enviarButton.classList.add(
             "bg-slate-950",
             "hover:bg-slate-800"
         );
+
 
         // ========================================
         // ESCONDER RESULTADO
@@ -129,6 +231,7 @@ limparButton.addEventListener(
         resultado.classList.add(
             "hidden"
         );
+
 
         // ========================================
         // VOLTAR AO TOPO
@@ -144,3 +247,4 @@ limparButton.addEventListener(
 
     }
 );
+

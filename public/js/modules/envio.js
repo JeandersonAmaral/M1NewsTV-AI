@@ -43,13 +43,16 @@ botaoEnvio.addEventListener(
             editor.innerHTML.trim();
 
         const slug =
-            slugInput.value.trim();
+            document.getElementById("slug").value.trim();
 
         const frase_chave =
-            fraseChaveInput.value.trim();
+            document.getElementById("frase_chave").value.trim();
 
         const meta_descricao =
-            metaDescricaoInput.value.trim();
+            document
+                .getElementById("meta_descricao")
+                .value
+                .trim();
 
         const autorId =
             Number(autorSelect.value);

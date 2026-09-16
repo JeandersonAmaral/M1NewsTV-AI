@@ -9,135 +9,160 @@
 // ========================================
 
 
-// ========================================
-// ELEMENTOS
-// ========================================
+(() => {
 
-const tituloInput =
-    document.getElementById("titulo");
+    // ========================================
+    // ELEMENTOS
+    // ========================================
 
-const contadorTitulo =
-    document.getElementById("contadorTitulo");
+    const seoTituloInput =
+        document.getElementById("titulo");
 
-const fraseChaveInput =
-    document.getElementById("frase_chave");
+    const seoContadorTitulo =
+        document.getElementById("contadorTitulo");
 
-const slugInput =
-    document.getElementById("slug");
+    const seoFraseChaveInput =
+        document.getElementById("frase_chave");
 
-const metaDescricaoInput =
-    document.getElementById("meta_descricao");
+    const seoSlugInput =
+        document.getElementById("slug");
 
-const contadorMeta =
-    document.getElementById("contadorMeta");
+    const seoMetaDescricaoInput =
+        document.getElementById("meta_descricao");
 
-
-// ========================================
-// LIMITES
-// ========================================
-
-const LIMITE_TITULO = 60;
-
-const LIMITE_META_MINIMO = 140;
-
-const LIMITE_META_MAXIMO = 160;
+    const seoContadorMeta =
+        document.getElementById("contadorMeta");
 
 
-// ========================================
-// CONTADOR DO TÍTULO
-// ========================================
+    // ========================================
+    // LIMITES
+    // ========================================
 
-function atualizarContadorTitulo() {
+    const SEO_LIMITE_TITULO = 60;
 
-    if (!tituloInput || !contadorTitulo) {
-        return;
-    }
+    const SEO_LIMITE_META_MINIMO = 140;
 
-    const quantidade =
-        tituloInput.value.length;
-
-    contadorTitulo.textContent =
-        `${quantidade} / ${LIMITE_TITULO} caracteres`;
-
-    if (
-        quantidade === 0 ||
-        quantidade > LIMITE_TITULO
-    ) {
-
-        contadorTitulo.className =
-            "text-xs font-semibold text-red-600";
-
-    } else {
-
-        contadorTitulo.className =
-            "text-xs font-semibold text-emerald-600";
-
-    }
-
-}
+    const SEO_LIMITE_META_MAXIMO = 160;
 
 
-// ========================================
-// CONTADOR DA META DESCRIÇÃO
-// ========================================
+    // ========================================
+    // CONTADOR DO TÍTULO
+    // ========================================
 
-function atualizarContadorMeta() {
+    function atualizarContadorTitulo() {
 
-    if (!metaDescricaoInput || !contadorMeta) {
-        return;
-    }
+        if (
+            !seoTituloInput ||
+            !seoContadorTitulo
+        ) {
 
-    const quantidade =
-        metaDescricaoInput.value.length;
+            return;
 
-    contadorMeta.textContent =
-        `${quantidade} / ${LIMITE_META_MAXIMO} caracteres`;
+        }
 
-    if (
-        quantidade >= LIMITE_META_MINIMO &&
-        quantidade <= LIMITE_META_MAXIMO
-    ) {
+        const quantidade =
+            seoTituloInput.value.length;
 
-        contadorMeta.className =
-            "text-xs font-semibold text-emerald-600";
+        seoContadorTitulo.textContent =
+            `${quantidade} / ${SEO_LIMITE_TITULO} caracteres`;
 
-    } else {
+        if (
+            quantidade === 0 ||
+            quantidade > SEO_LIMITE_TITULO
+        ) {
 
-        contadorMeta.className =
-            "text-xs font-semibold text-red-600";
+            seoContadorTitulo.className =
+                "text-xs font-semibold text-red-600";
+
+        } else {
+
+            seoContadorTitulo.className =
+                "text-xs font-semibold text-emerald-600";
+
+        }
 
     }
 
-}
+
+    // ========================================
+    // CONTADOR DA META DESCRIÇÃO
+    // ========================================
+
+    function atualizarContadorMeta() {
+
+        if (
+            !seoMetaDescricaoInput ||
+            !seoContadorMeta
+        ) {
+
+            return;
+
+        }
+
+        const quantidade =
+            seoMetaDescricaoInput.value.length;
+
+        seoContadorMeta.textContent =
+            `${quantidade} / ${SEO_LIMITE_META_MAXIMO} caracteres`;
+
+        if (
+            quantidade >= SEO_LIMITE_META_MINIMO &&
+            quantidade <= SEO_LIMITE_META_MAXIMO
+        ) {
+
+            seoContadorMeta.className =
+                "text-xs font-semibold text-emerald-600";
+
+        } else {
+
+            seoContadorMeta.className =
+                "text-xs font-semibold text-red-600";
+
+        }
+
+    }
 
 
-// ========================================
-// EVENTOS
-// ========================================
+    // ========================================
+    // EVENTOS
+    // ========================================
 
-if (tituloInput) {
+    if (seoTituloInput) {
 
-    tituloInput.addEventListener(
-        "input",
-        atualizarContadorTitulo
-    );
+        seoTituloInput.addEventListener(
+            "input",
+            atualizarContadorTitulo
+        );
 
-}
+    }
 
-if (metaDescricaoInput) {
+    if (seoMetaDescricaoInput) {
 
-    metaDescricaoInput.addEventListener(
-        "input",
-        atualizarContadorMeta
-    );
+        seoMetaDescricaoInput.addEventListener(
+            "input",
+            atualizarContadorMeta
+        );
 
-}
+    }
 
 
-// ========================================
-// ATUALIZAÇÃO INICIAL
-// ========================================
+    // ========================================
+    // DISPONIBILIZAR PARA OUTROS MÓDULOS
+    // ========================================
 
-atualizarContadorTitulo();
+    window.atualizarContadorTitulo =
+        atualizarContadorTitulo;
 
-atualizarContadorMeta();
+    window.atualizarContadorMeta =
+        atualizarContadorMeta;
+
+
+    // ========================================
+    // ATUALIZAÇÃO INICIAL
+    // ========================================
+
+    atualizarContadorTitulo();
+
+    atualizarContadorMeta();
+
+})();
