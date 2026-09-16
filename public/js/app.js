@@ -62,6 +62,19 @@ const destinoSelect =
     document.getElementById("destino");
 
 // ========================================
+// CAMPOS DE SEO
+// ========================================
+
+const fraseChaveInput =
+    document.getElementById("frase_chave");
+
+const slugInput =
+    document.getElementById("slug");
+
+const metaDescricaoInput =
+    document.getElementById("meta_descricao");
+
+// ========================================
 // GERAR MATÉRIA
 // ========================================
 
@@ -209,6 +222,8 @@ gerarButton.addEventListener(
             metaDescricaoInput.value =
                 materia.meta_descricao || "";
 
+            atualizarContadorTitulo();
+
             atualizarContadorMeta();
 
             // ========================================
@@ -269,5 +284,7 @@ gerarButton.addEventListener(
 
     }
 );
+
+atualizarContadorTitulo();
 
 atualizarContadorMeta();
