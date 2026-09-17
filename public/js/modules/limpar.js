@@ -132,7 +132,7 @@ limparButton.addEventListener(
         // RESTAURAR DESTINO
         // ========================================
 
-        destinoSelect.value = "draft";
+        destinoSelect.value = "publish";
 
 
         // ========================================

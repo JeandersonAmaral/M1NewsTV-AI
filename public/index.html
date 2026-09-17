@@ -253,7 +253,7 @@
                         </div>
 
                         <div id="editor" contenteditable="true" spellcheck="true"
-                            class="min-h-[550px] rounded-xl border border-slate-300 bg-white px-6 py-5 text-base leading-8 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+                            class="rounded-xl border border-slate-300 bg-white px-6 py-5 text-base leading-8 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
                         </div>
 
                         <p class="mt-2 text-xs text-slate-400">
@@ -300,44 +300,51 @@
             </section>
 
             <!-- ======================================== -->
-            <!-- TAGS - CATEGORIAS - IMAGEM -->
+            <!-- TAGS - IMAGEM - CATEGORIAS -->
             <!-- ======================================== -->
 
             <div class="grid gap-6 lg:grid-cols-2">
 
-                <!-- TAGS -->
+                <!-- COLUNA ESQUERDA -->
 
-                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="space-y-6">
 
-                    <div class="mb-5">
+                    <!-- TAGS -->
 
-                        <h2 class="text-lg font-bold">
-                            Tags
-                        </h2>
+                    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-                        <p class="mt-1 text-sm text-slate-500">
-                            Revise ou adicione tags à matéria.
-                        </p>
+                        <div class="mb-5">
 
-                    </div>
+                            <h2 class="text-lg font-bold">
+                                Tags
+                            </h2>
 
-                    <div id="tags" class="mb-4 flex flex-wrap gap-2"></div>
+                            <p class="mt-1 text-sm text-slate-500">
+                                Revise ou adicione tags à matéria.
+                            </p>
 
-                    <div class="flex gap-2">
+                        </div>
 
-                        <input type="text" id="novaTag" placeholder="Nova tag"
-                            class="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+                        <div id="tags" class="mb-4 flex flex-wrap gap-2"></div>
 
-                        <button id="adicionarTag" type="button"
-                            class="rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-300">
-                            Adicionar
-                        </button>
+                        <div class="flex gap-2">
 
-                    </div>
+                            <input type="text" id="novaTag" placeholder="Nova tag"
+                                class="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
+
+                            <button id="adicionarTag" type="button"
+                                class="rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-300">
+                                Adicionar
+                            </button>
+
+                        </div>
+
+                    </section>
 
                     <!-- IMAGEM -->
 
-                    <div id="previewImagemContainer" class="mt-6 hidden">
+                    <section id="previewImagemContainer"
+                        class="hidden min-h-[550px] rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
                         <div class="mb-3">
 
@@ -362,9 +369,9 @@
                             Dimensões: —
                         </p>
 
-                    </div>
+                    </section>
 
-                </section>
+                </div>
 
                 <!-- CATEGORIAS -->
 
@@ -486,12 +493,12 @@
                     <select id="destino"
                         class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200">
 
-                        <option value="draft">
-                            Rascunho
-                        </option>
-
                         <option value="publish">
                             Post
+                        </option>
+
+                        <option value="draft">
+                            Rascunho
                         </option>
 
                     </select>
