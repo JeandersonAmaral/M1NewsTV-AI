@@ -96,7 +96,7 @@ function atualizarPreviewImagem() {
         () => {
 
             tamanhoImagem.textContent =
-                `Dimensões: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px`;
+                `Dimensões atuais: ${previewImagem.naturalWidth} × ${previewImagem.naturalHeight} px`;
 
         };
 

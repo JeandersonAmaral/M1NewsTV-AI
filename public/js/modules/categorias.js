@@ -201,7 +201,8 @@ function criarCheckboxCategoria(
         document.createElement("label");
 
     label.className =
-        "flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50";
+         "flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50 dark:text-white dark:hover:bg-slate-800";
+
 
     label.innerHTML = `
 
