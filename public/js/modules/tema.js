@@ -47,11 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
             modoEscuro
         );
 
-        iconeTema.textContent =
-            modoEscuro
-                ? "☾"
-                : "☀";
-
         botaoTema.setAttribute(
             "aria-label",
             modoEscuro

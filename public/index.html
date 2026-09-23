@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M1News AI | Assistente de redação</title>
-    <link rel="icon" type="image/png" href="https://m1newstv.com/wp-content/uploads/2018/02/favicon-32x32.png">
+    <link rel="icon" type="image/png" href="images/Png/favicon-32x32.png" sizes="32x32">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -44,7 +44,7 @@
 
     <div class="flex items-center gap-4">
 
-        <img src="images/M1_logo.png" alt="M1NewsTV" class="h-20">
+        <img src="images/Png/M1_logo.png" alt="M1NewsTV" class="h-20">
 
         <div>
 
@@ -68,28 +68,29 @@
     <!-- AÇÕES DO USUÁRIO -->
     <!-- ======================================== -->
 
-    <div class="flex items-center gap-3"> <span class="text-sm font-medium text-slate-300"> Tema </span>
+    <div class="flex items-center gap-3"> <span class="text-sm font-medium text-slate-300"> Tema: </span>
         
         <button
-        id="alternarTema"
-        type="button"
-        aria-label="Alternar tema"
-        title="Alternar tema"
-        class="relative flex h-6 w-12 items-center justify-between rounded-full border border-slate-700 bg-slate-900 px-1 transition-colors duration-300 hover:bg-slate-800">
+            id="alternarTema"
+            type="button"
+            aria-label="Alternar tema"
+            title="Alternar tema"
+            class="relative flex h-6 w-12 items-center overflow-hidden rounded-full border-2 border-slate-700 bg-slate-900 transition-colors duration-300 hover:bg-slate-800">
 
-        <span class="relative z-0 flex h-4 w-4 items-center justify-center text-xs leading-none text-slate-400">
-            ☀
-        </span>
+            <span
+                class="absolute left-1 z-0 flex h-4 w-4 items-center justify-center text-[12px] leading-none text-slate-400">
+                ☀
+            </span>
 
-        <span class="relative z-0 flex h-4 w-4 items-center justify-center text-xs leading-none text-slate-400">
-            ☾
-        </span>
+            <span
+                class="absolute right-1 z-0 flex h-4 w-4 items-center justify-center text-[12px] leading-none text-slate-400">
+                ☾
+            </span>
 
-        <span
-            id="iconeTema"
-            class="absolute left-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] leading-none text-slate-900 shadow-md transition-all duration-300 dark:left-7">
-            ☀
-        </span>
+            <span
+                id="iconeTema"
+                class="absolute left-1 z-10 h-4 w-4 rounded-full bg-white shadow-md transition-all duration-300 dark:left-7">
+            </span>
 
         </button>
 
@@ -98,7 +99,7 @@
 
             <span class="h-2 w-2 rounded-full bg-amber-500"></span>
 
-            v2.5 - Beta
+            v2.5.1 - Beta
 
         </div>
 
