@@ -246,7 +246,9 @@ botaoEnvio.addEventListener(
 
             botaoEnvio.classList.remove(
                 "bg-slate-950",
-                "hover:bg-slate-800"
+                "hover:bg-slate-800",
+                "dark:bg-white",
+                "dark:hover:bg-gray-200"
             );
 
             botaoEnvio.classList.add(

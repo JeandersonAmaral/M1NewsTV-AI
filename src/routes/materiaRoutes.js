@@ -4,6 +4,8 @@ const {
 
     gerarMateria,
 
+    regenerarCampo,
+
     enviarMateria,
 
     testarWordPress,
@@ -29,6 +31,20 @@ router.post(
     autenticar,
 
     gerarMateria
+
+);
+
+// ========================================
+// REGENERAR CAMPO INDIVIDUAL
+// ========================================
+
+router.post(
+
+    "/materias/regenerar",
+
+    autenticar,
+
+    regenerarCampo
 
 );
 

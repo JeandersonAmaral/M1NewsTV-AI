@@ -6,6 +6,7 @@
 // - Montar prompt principal da matéria
 // - Montar prompt de ALT text
 // - Montar prompt para novo título
+// - Montar prompts para regeneração individual
 // ==================================================
 
 // ==================================================
@@ -465,11 +466,400 @@ ${texto}
 }
 
 // ==================================================
+// PROMPT PARA REGENERAR DESCRIÇÃO
+// ==================================================
+
+function criarPromptRegenerarDescricao(
+    titulo,
+    subtitulo,
+    texto,
+    descricaoAtual
+) {
+
+    return `
+Você é um editor jornalístico do M1NewsTV.
+
+Crie uma NOVA descrição jornalística para a matéria abaixo.
+
+A nova descrição deve ser diferente da descrição atual,
+mas deve preservar exatamente as informações presentes
+na matéria.
+
+REGRAS:
+
+- Escreva em português brasileiro.
+- Seja claro, objetivo e informativo.
+- Não invente informações.
+- Não acrescente informações externas.
+- Não altere o sentido da notícia.
+- Não utilize sensacionalismo.
+- Não utilize emojis.
+- Não utilize hashtags.
+- Não utilize aspas.
+- Não escreva explicações.
+- Retorne somente um JSON válido.
+- Altere SOMENTE a descrição.
+
+FORMATO OBRIGATÓRIO:
+
+{
+    "descricao": ""
+}
+
+TÍTULO:
+
+${titulo}
+
+SUBTÍTULO:
+
+${subtitulo}
+
+DESCRIÇÃO ATUAL:
+
+${descricaoAtual}
+
+CONTEÚDO ORIGINAL:
+
+${texto}
+
+`;
+}
+
+// ==================================================
+// PROMPT PARA REGENERAR SUBTÍTULO
+// ==================================================
+
+function criarPromptRegenerarSubtitulo(
+    titulo,
+    descricao,
+    texto,
+    subtituloAtual
+) {
+
+    return `
+Você é um editor de títulos e subtítulos jornalísticos
+do M1NewsTV.
+
+Crie um NOVO subtítulo jornalístico para a matéria abaixo.
+
+O novo subtítulo deve ser diferente do subtítulo atual,
+mas deve complementar o título e representar fielmente
+o conteúdo da notícia.
+
+REGRAS:
+
+- Escreva em português brasileiro.
+- Seja claro, objetivo e informativo.
+- Não invente informações.
+- Não acrescente informações externas.
+- Não altere o sentido da notícia.
+- Não utilize sensacionalismo.
+- Não utilize emojis.
+- Não utilize hashtags.
+- Não utilize HTML.
+- Não utilize aspas.
+- Não escreva explicações.
+- Retorne somente um JSON válido.
+- Altere SOMENTE o subtítulo.
+
+FORMATO OBRIGATÓRIO:
+
+{
+    "subtitulo": ""
+}
+
+TÍTULO:
+
+${titulo}
+
+DESCRIÇÃO:
+
+${descricao}
+
+SUBTÍTULO ATUAL:
+
+${subtituloAtual}
+
+CONTEÚDO ORIGINAL:
+
+${texto}
+
+`;
+}
+
+// ==================================================
+// PROMPT PARA REGENERAR FRASE-CHAVE
+// ==================================================
+
+function criarPromptRegenerarFraseChave(
+    titulo,
+    descricao,
+    subtitulo,
+    texto,
+    fraseChaveAtual
+) {
+
+    return `
+Você é um especialista em SEO jornalístico do M1NewsTV.
+
+Crie uma NOVA frase-chave foco para a matéria abaixo.
+
+A nova frase-chave deve ser diferente da frase-chave atual
+e representar claramente o assunto central da notícia.
+
+REGRAS:
+
+- Escreva em português brasileiro.
+- Seja natural e específica.
+- Seja curta.
+- Não utilize hashtags.
+- Não utilize emojis.
+- Não utilize aspas.
+- Não invente informações.
+- Não acrescente informações externas.
+- Não utilize termos que não estejam relacionados ao conteúdo.
+- Não escreva explicações.
+- Retorne somente um JSON válido.
+- Altere SOMENTE a frase-chave.
+
+FORMATO OBRIGATÓRIO:
+
+{
+    "frase_chave": ""
+}
+
+TÍTULO:
+
+${titulo}
+
+DESCRIÇÃO:
+
+${descricao}
+
+SUBTÍTULO:
+
+${subtitulo}
+
+FRASE-CHAVE ATUAL:
+
+${fraseChaveAtual}
+
+CONTEÚDO ORIGINAL:
+
+${texto}
+
+`;
+}
+
+// ==================================================
+// PROMPT PARA REGENERAR SLUG
+// ==================================================
+
+function criarPromptRegenerarSlug(
+    titulo,
+    descricao,
+    fraseChave,
+    texto,
+    slugAtual
+) {
+
+    return `
+Você é um especialista em SEO do M1NewsTV.
+
+Crie um NOVO slug para a matéria abaixo.
+
+O novo slug deve ser diferente do slug atual e continuar
+representando o assunto principal da notícia.
+
+REGRAS:
+
+- Somente letras minúsculas.
+- Sem acentos.
+- Sem caracteres especiais.
+- Palavras separadas por hífens.
+- Curto e objetivo.
+- Não utilize palavras desnecessárias.
+- Não invente informações.
+- Não acrescente informações externas.
+- Não utilize hashtags.
+- Não utilize emojis.
+- Não escreva explicações.
+- Retorne somente um JSON válido.
+- Altere SOMENTE o slug.
+
+FORMATO OBRIGATÓRIO:
+
+{
+    "slug": ""
+}
+
+TÍTULO:
+
+${titulo}
+
+DESCRIÇÃO:
+
+${descricao}
+
+FRASE-CHAVE:
+
+${fraseChave}
+
+SLUG ATUAL:
+
+${slugAtual}
+
+CONTEÚDO ORIGINAL:
+
+${texto}
+
+`;
+}
+
+// ==================================================
+// PROMPT PARA REGENERAR META DESCRIÇÃO
+// ==================================================
+
+function criarPromptRegenerarMetaDescricao(
+    titulo,
+    descricao,
+    fraseChave,
+    texto,
+    metaDescricaoAtual
+) {
+
+    return `
+Você é um especialista em SEO jornalístico do M1NewsTV.
+
+Crie uma NOVA meta descrição para a matéria abaixo.
+
+A nova meta descrição deve ser diferente da meta descrição
+atual e representar fielmente o conteúdo da notícia.
+
+REGRAS:
+
+- Escreva em português brasileiro.
+- Tenha aproximadamente 140 a 160 caracteres.
+- Seja objetiva e informativa.
+- Sempre que possível, utilize naturalmente a frase-chave.
+- Não invente informações.
+- Não acrescente informações externas.
+- Não utilize sensacionalismo.
+- Não utilize hashtags.
+- Não utilize emojis.
+- Não utilize aspas.
+- Não escreva explicações.
+- Retorne somente um JSON válido.
+- Altere SOMENTE a meta descrição.
+
+FORMATO OBRIGATÓRIO:
+
+{
+    "meta_descricao": ""
+}
+
+TÍTULO:
+
+${titulo}
+
+DESCRIÇÃO:
+
+${descricao}
+
+FRASE-CHAVE:
+
+${fraseChave}
+
+META DESCRIÇÃO ATUAL:
+
+${metaDescricaoAtual}
+
+CONTEÚDO ORIGINAL:
+
+${texto}
+
+`;
+}
+
+// ==================================================
+// PROMPT PARA REGENERAR ALT TEXT
+// ==================================================
+
+function criarPromptRegenerarAltText(
+    titulo,
+    texto,
+    altTextAtual
+) {
+
+    return `
+Você é um editor de acessibilidade e SEO do M1NewsTV.
+
+Crie um NOVO texto alternativo (alt text) para a imagem
+principal da matéria jornalística abaixo.
+
+O novo alt text deve ser diferente do alt text atual.
+
+REGRAS:
+
+- Escreva em português brasileiro.
+- Seja curto, natural e objetivo.
+- Descreva o que a imagem representa com base no contexto
+  disponível da matéria.
+- Não invente pessoas, objetos, locais ou acontecimentos.
+- Não utilize hashtags.
+- Não utilize emojis.
+- Não utilize aspas.
+- Não escreva "Imagem da matéria".
+- Não escreva "Foto da matéria".
+- Não escreva "Imagem relacionada à matéria".
+- Não escreva explicações.
+- O texto deve ser adequado para acessibilidade.
+- Retorne somente um JSON válido.
+- Altere SOMENTE o alt_text.
+
+FORMATO OBRIGATÓRIO:
+
+{
+    "alt_text": ""
+}
+
+TÍTULO:
+
+${titulo}
+
+ALT TEXT ATUAL:
+
+${altTextAtual}
+
+CONTEÚDO ORIGINAL:
+
+${texto}
+
+`;
+}
+
+// ==================================================
 // EXPORTAR
 // ==================================================
 
 module.exports = {
+
     criarPromptMateria,
+
     criarPromptAltText,
-    criarPromptNovoTitulo
+
+    criarPromptNovoTitulo,
+
+    criarPromptRegenerarDescricao,
+
+    criarPromptRegenerarSubtitulo,
+
+    criarPromptRegenerarFraseChave,
+
+    criarPromptRegenerarSlug,
+
+    criarPromptRegenerarMetaDescricao,
+
+    criarPromptRegenerarAltText
+
 };

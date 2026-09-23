@@ -68,8 +68,12 @@
     <!-- AÇÕES DO USUÁRIO -->
     <!-- ======================================== -->
 
-    <div class="flex items-center gap-3"> <span class="text-sm font-medium text-slate-300"> Tema: </span>
-        
+    <div class="flex items-center gap-3">
+
+        <span class="text-sm font-medium text-slate-300">
+            Tema:
+        </span>
+
         <button
             id="alternarTema"
             type="button"
@@ -103,7 +107,9 @@
 
         </div>
 
-        <button id="sair" type="button"
+        <button
+            id="sair"
+            type="button"
             class="rounded-xl border border-gray-700 bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 transition hover:bg-gray-800 hover:text-white">
             Logout
         </button>
@@ -219,9 +225,21 @@
                         Título
                     </label>
 
-                    <span id="contadorTitulo" class="text-xs text-slate-400">
-                        0 / 60 caracteres
-                    </span>
+                    <div class="flex items-center gap-3">
+
+                        <span id="contadorTitulo" class="text-xs text-slate-400">
+                            0 / 60 caracteres
+                        </span>
+
+                        <button
+                            id="regenerarTitulo"
+                            type="button"
+                            title="Regenerar título"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                            ↻ Regenerar
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -241,9 +259,21 @@
                         Descrição
                     </label>
 
-                    <span class="text-xs text-slate-400">
-                        Será exibido junto a imagem destacada na Home
-                    </span>
+                    <div class="flex items-center gap-3">
+
+                        <span class="text-xs text-slate-400">
+                            Será exibido junto a imagem destacada na Home
+                        </span>
+
+                        <button
+                            id="regenerarDescricao"
+                            type="button"
+                            title="Regenerar descrição"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                            ↻ Regenerar
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -263,9 +293,21 @@
                         Subtítulo
                     </label>
 
-                    <span class="text-xs text-slate-400">
-                        Será convertido em H1
-                    </span>
+                    <div class="flex items-center gap-3">
+
+                        <span class="text-xs text-slate-400">
+                            Será convertido em H1
+                        </span>
+
+                        <button
+                            id="regenerarSubtitulo"
+                            type="button"
+                            title="Regenerar subtítulo"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                            ↻ Regenerar
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -476,10 +518,22 @@
 
             <div>
 
-                <label for="frase_chave"
-                    class="mb-2 block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                    Frase-chave foco
-                </label>
+                <div class="mb-2 flex items-center justify-between">
+
+                    <label for="frase_chave"
+                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                        Frase-chave foco
+                    </label>
+
+                    <button
+                        id="regenerarFraseChave"
+                        type="button"
+                        title="Regenerar frase-chave"
+                        class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                        ↻ Regenerar
+                    </button>
+
+                </div>
 
                 <input type="text" id="frase_chave"
                     class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
@@ -490,10 +544,22 @@
 
             <div>
 
-                <label for="slug"
-                    class="mb-2 block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                    Slug
-                </label>
+                <div class="mb-2 flex items-center justify-between">
+
+                    <label for="slug"
+                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                        Slug
+                    </label>
+
+                    <button
+                        id="regenerarSlug"
+                        type="button"
+                        title="Regenerar slug"
+                        class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                        ↻ Regenerar
+                    </button>
+
+                </div>
 
                 <input type="text" id="slug"
                     class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
@@ -511,9 +577,21 @@
                         Meta descrição
                     </label>
 
-                    <span id="contadorMeta" class="text-xs text-slate-400">
-                        0 / 160 caracteres
-                    </span>
+                    <div class="flex items-center gap-3">
+
+                        <span id="contadorMeta" class="text-xs text-slate-400">
+                            0 / 160 caracteres
+                        </span>
+
+                        <button
+                            id="regenerarMetaDescricao"
+                            type="button"
+                            title="Regenerar meta descrição"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                            ↻ Regenerar
+                        </button>
+
+                    </div>
 
                 </div>
 

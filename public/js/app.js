@@ -75,6 +75,339 @@ const metaDescricaoInput =
     document.getElementById("meta_descricao");
 
 // ========================================
+// BOTÕES DE REGENERAÇÃO
+// ========================================
+
+const regenerarTituloButton =
+    document.getElementById(
+        "regenerarTitulo"
+    );
+
+const regenerarDescricaoButton =
+    document.getElementById(
+        "regenerarDescricao"
+    );
+
+const regenerarSubtituloButton =
+    document.getElementById(
+        "regenerarSubtitulo"
+    );
+
+const regenerarFraseChaveButton =
+    document.getElementById(
+        "regenerarFraseChave"
+    );
+
+const regenerarSlugButton =
+    document.getElementById(
+        "regenerarSlug"
+    );
+
+const regenerarMetaDescricaoButton =
+    document.getElementById(
+        "regenerarMetaDescricao"
+    );
+
+// ========================================
+// DADOS DA MATÉRIA ORIGINAL
+// ========================================
+
+let textoMateriaOriginal = "";
+
+// ========================================
+// REGENERAR CAMPO
+// ========================================
+
+async function regenerarCampo(
+    campo,
+    botao,
+    obterValor
+) {
+
+    if (!botao) {
+
+        return;
+
+    }
+
+    botao.disabled = true;
+
+    const textoOriginal =
+        botao.textContent;
+
+    botao.textContent =
+        "Gerando...";
+
+    try {
+
+        const materia = {
+
+            titulo:
+                tituloInput.value.trim(),
+
+            descricao:
+                descricaoInput.value.trim(),
+
+            subtitulo:
+                subtituloInput.value.trim(),
+
+            frase_chave:
+                fraseChaveInput.value.trim(),
+
+            slug:
+                slugInput.value.trim(),
+
+            meta_descricao:
+                metaDescricaoInput.value.trim(),
+
+            texto:
+                textoMateriaOriginal
+
+        };
+
+        const response =
+            await fetchAutenticado(
+                "/api/materias/regenerar",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        campo,
+
+                        materia
+
+                    })
+
+                }
+            );
+
+        if (!response) {
+
+            return;
+
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.sucesso
+        ) {
+
+            throw new Error(
+                data.mensagem ||
+                "Erro ao regenerar campo."
+            );
+
+        }
+
+        const novoValor =
+            data.resultado?.[campo];
+
+        if (!novoValor) {
+
+            throw new Error(
+                "A IA não retornou um novo valor."
+            );
+
+        }
+
+        obterValor(
+            novoValor
+        );
+
+    } catch (error) {
+
+        console.error(
+            `Erro ao regenerar ${campo}:`,
+            error
+        );
+
+        alert(
+            "Erro ao regenerar:\n\n" +
+            error.message
+        );
+
+    } finally {
+
+        botao.disabled =
+            false;
+
+        botao.textContent =
+            textoOriginal;
+
+    }
+
+}
+
+// ========================================
+// REGENERAR TÍTULO
+// ========================================
+
+if (regenerarTituloButton) {
+
+    regenerarTituloButton.addEventListener(
+        "click",
+        () => {
+
+            regenerarCampo(
+                "titulo",
+                regenerarTituloButton,
+                novoValor => {
+
+                    tituloInput.value =
+                        novoValor;
+
+                    atualizarContadorTitulo();
+
+                }
+            );
+
+        }
+    );
+
+}
+
+// ========================================
+// REGENERAR DESCRIÇÃO
+// ========================================
+
+if (regenerarDescricaoButton) {
+
+    regenerarDescricaoButton.addEventListener(
+        "click",
+        () => {
+
+            regenerarCampo(
+                "descricao",
+                regenerarDescricaoButton,
+                novoValor => {
+
+                    descricaoInput.value =
+                        novoValor;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+// ========================================
+// REGENERAR SUBTÍTULO
+// ========================================
+
+if (regenerarSubtituloButton) {
+
+    regenerarSubtituloButton.addEventListener(
+        "click",
+        () => {
+
+            regenerarCampo(
+                "subtitulo",
+                regenerarSubtituloButton,
+                novoValor => {
+
+                    subtituloInput.value =
+                        novoValor;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+// ========================================
+// REGENERAR FRASE-CHAVE
+// ========================================
+
+if (regenerarFraseChaveButton) {
+
+    regenerarFraseChaveButton.addEventListener(
+        "click",
+        () => {
+
+            regenerarCampo(
+                "frase_chave",
+                regenerarFraseChaveButton,
+                novoValor => {
+
+                    fraseChaveInput.value =
+                        novoValor;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+// ========================================
+// REGENERAR SLUG
+// ========================================
+
+if (regenerarSlugButton) {
+
+    regenerarSlugButton.addEventListener(
+        "click",
+        () => {
+
+            regenerarCampo(
+                "slug",
+                regenerarSlugButton,
+                novoValor => {
+
+                    slugInput.value =
+                        novoValor;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+// ========================================
+// REGENERAR META DESCRIÇÃO
+// ========================================
+
+if (regenerarMetaDescricaoButton) {
+
+    regenerarMetaDescricaoButton.addEventListener(
+        "click",
+        () => {
+
+            regenerarCampo(
+                "meta_descricao",
+                regenerarMetaDescricaoButton,
+                novoValor => {
+
+                    metaDescricaoInput.value =
+                        novoValor;
+
+                    atualizarContadorMeta();
+
+                }
+            );
+
+        }
+    );
+
+}
+
+// ========================================
 // GERAR MATÉRIA
 // ========================================
 
@@ -117,6 +450,8 @@ gerarButton.addEventListener(
         // ========================================
 
         limparImagem();
+
+        textoMateriaOriginal = "";
 
         // ========================================
         // LIMPAR PREVIEW
@@ -171,6 +506,14 @@ gerarButton.addEventListener(
 
             const materia =
                 data.materiaGerada;
+
+            // ========================================
+            // TEXTO ORIGINAL
+            // ========================================
+
+            textoMateriaOriginal =
+                data.materiaOriginal?.texto ||
+                "";
 
             // ========================================
             // IMAGEM ORIGINAL

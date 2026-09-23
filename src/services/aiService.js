@@ -6,7 +6,13 @@ const logger =
 const {
     criarPromptMateria,
     criarPromptAltText,
-    criarPromptNovoTitulo
+    criarPromptNovoTitulo,
+    criarPromptRegenerarDescricao,
+    criarPromptRegenerarSubtitulo,
+    criarPromptRegenerarFraseChave,
+    criarPromptRegenerarSlug,
+    criarPromptRegenerarMetaDescricao,
+    criarPromptRegenerarAltText
 } = require("../prompts/materiaPrompts");
 
 // ==================================================
@@ -170,7 +176,10 @@ async function chamarIA(
                         type:
                             "json_object"
 
-                    }
+                    },
+
+                    max_completion_tokens:
+                        8192
 
                 });
 
@@ -239,6 +248,247 @@ async function chamarIA(
         }
 
     }
+
+}
+
+// ==================================================
+// REGENERAR CAMPO INDIVIDUAL
+// ==================================================
+
+async function regenerarCampo(
+    campo,
+    materia
+) {
+
+    const camposPermitidos = [
+
+        "titulo",
+        "descricao",
+        "subtitulo",
+        "frase_chave",
+        "slug",
+        "meta_descricao",
+        "alt_text"
+
+    ];
+
+    if (
+        !camposPermitidos.includes(
+            campo
+        )
+    ) {
+
+        throw new Error(
+            "Campo não permitido para regeneração."
+        );
+
+    }
+
+    let prompt;
+
+    // ==================================================
+    // ESCOLHER PROMPT
+    // ==================================================
+
+    switch (campo) {
+
+        case "titulo":
+
+            prompt =
+                criarPromptNovoTitulo(
+                    materia.titulo,
+                    materia.titulo,
+                    materia.texto
+                );
+
+            break;
+
+        case "descricao":
+
+            prompt =
+                criarPromptRegenerarDescricao(
+                    materia.titulo,
+                    materia.subtitulo,
+                    materia.texto,
+                    materia.descricao
+                );
+
+            break;
+
+        case "subtitulo":
+
+            prompt =
+                criarPromptRegenerarSubtitulo(
+                    materia.titulo,
+                    materia.descricao,
+                    materia.texto,
+                    materia.subtitulo
+                );
+
+            break;
+
+        case "frase_chave":
+
+            prompt =
+                criarPromptRegenerarFraseChave(
+                    materia.titulo,
+                    materia.descricao,
+                    materia.subtitulo,
+                    materia.texto,
+                    materia.frase_chave
+                );
+
+            break;
+
+        case "slug":
+
+            prompt =
+                criarPromptRegenerarSlug(
+                    materia.titulo,
+                    materia.descricao,
+                    materia.frase_chave,
+                    materia.texto,
+                    materia.slug
+                );
+
+            break;
+
+        case "meta_descricao":
+
+            prompt =
+                criarPromptRegenerarMetaDescricao(
+                    materia.titulo,
+                    materia.descricao,
+                    materia.frase_chave,
+                    materia.texto,
+                    materia.meta_descricao
+                );
+
+            break;
+
+        case "alt_text":
+
+            prompt =
+                criarPromptRegenerarAltText(
+                    materia.titulo,
+                    materia.texto,
+                    materia.alt_text
+                );
+
+            break;
+
+    }
+
+    logger.info(
+        `Regenerando campo individual: ${campo}`
+    );
+
+    // ==================================================
+    // CHAMAR IA
+    // ==================================================
+
+    const response =
+        await chamarIA(
+            prompt
+        );
+
+    const textoResposta =
+        limparJson(
+            response.text
+        );
+
+    let resultado;
+
+    // ==================================================
+    // VALIDAR JSON
+    // ==================================================
+
+    try {
+
+        resultado =
+            JSON.parse(
+                textoResposta
+            );
+
+    } catch (error) {
+
+        logger.error(
+            `A IA não retornou um JSON válido ao regenerar ${campo}.`,
+            textoResposta
+        );
+
+        throw new Error(
+            `A IA não retornou um ${campo} válido.`
+        );
+
+    }
+
+    // ==================================================
+    // OBTER NOVO VALOR
+    // ==================================================
+
+    const novoValor =
+        String(
+            resultado[campo] || ""
+        ).trim();
+
+    if (!novoValor) {
+
+        throw new Error(
+            `A IA não retornou um valor válido para ${campo}.`
+        );
+
+    }
+
+    // ==================================================
+    // PROTEÇÃO CONTRA TÍTULO IGUAL
+    // ==================================================
+
+    if (
+        campo === "titulo"
+    ) {
+
+        const tituloAtualNormalizado =
+            normalizarTitulo(
+                materia.titulo
+            );
+
+        const novoTituloNormalizado =
+            normalizarTitulo(
+                novoValor
+            );
+
+        if (
+            tituloAtualNormalizado ===
+            novoTituloNormalizado
+        ) {
+
+            throw new Error(
+                "A IA gerou o mesmo título atual. Tente regenerar novamente."
+            );
+
+        }
+
+    }
+
+    // ==================================================
+    // LOG
+    // ==================================================
+
+    logger.info(
+        `Campo ${campo} regenerado com sucesso.`
+    );
+
+    // ==================================================
+    // RETORNAR SOMENTE O CAMPO
+    // ==================================================
+
+    return {
+
+        [campo]:
+            novoValor
+
+    };
 
 }
 
@@ -560,6 +810,7 @@ async function gerarMateria(
 
 module.exports = {
 
-    gerarMateria
+    gerarMateria,
+    regenerarCampo
 
 };

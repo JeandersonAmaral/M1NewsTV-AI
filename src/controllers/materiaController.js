@@ -1,11 +1,21 @@
-const { gerarMateria: gerarMateriaIA } = require("../services/aiService");
-const { extrairMateria } = require("../services/articleExtractor");
+const {
+    gerarMateria: gerarMateriaIA,
+    regenerarCampo: regenerarCampoIA
+} = require("../services/aiService");
+
+const { extrairMateria } =
+    require("../services/articleExtractor");
+
 const {
     enviarMateriaParaWordPress,
     obterAutoresPermitidos
 } = require("../services/wordpressService");
-const { validarUrl } = require("../utils/urlValidator");
-const logger = require("../utils/logger");
+
+const { validarUrl } =
+    require("../utils/urlValidator");
+
+const logger =
+    require("../utils/logger");
 
 // ========================================
 // IDENTIFICAR FONTE
@@ -226,6 +236,105 @@ async function gerarMateria(req, res) {
 }
 
 // ========================================
+// REGENERAR CAMPO INDIVIDUAL
+// ========================================
+
+async function regenerarCampo(req, res) {
+
+    const {
+        campo,
+        materia
+    } = req.body;
+
+    // ========================================
+    // VALIDAR CAMPO
+    // ========================================
+
+    if (!campo) {
+
+        return res.status(400).json({
+
+            sucesso: false,
+
+            mensagem:
+                "O campo para regeneração é obrigatório."
+
+        });
+
+    }
+
+    // ========================================
+    // VALIDAR MATÉRIA
+    // ========================================
+
+    if (
+        !materia ||
+        typeof materia !== "object"
+    ) {
+
+        return res.status(400).json({
+
+            sucesso: false,
+
+            mensagem:
+                "Os dados da matéria são obrigatórios."
+
+        });
+
+    }
+
+    try {
+
+        logger.info(
+            `Solicitada regeneração do campo: ${campo}`
+        );
+
+        // ========================================
+        // REGENERAR CAMPO
+        // ========================================
+
+        const resultado =
+            await regenerarCampoIA(
+                campo,
+                materia
+            );
+
+        // ========================================
+        // RETORNAR RESULTADO
+        // ========================================
+
+        return res.json({
+
+            sucesso: true,
+
+            campo,
+
+            resultado
+
+        });
+
+    } catch (error) {
+
+        logger.error(
+            `Erro ao regenerar campo ${campo}:`,
+            error
+        );
+
+        return res.status(500).json({
+
+            sucesso: false,
+
+            mensagem:
+                error.message ||
+                "Não foi possível regenerar o campo."
+
+        });
+
+    }
+
+}
+
+// ========================================
 // ENVIAR MATÉRIA PARA WORDPRESS
 // ========================================
 
@@ -413,6 +522,8 @@ async function testarWordPress(req, res) {
 module.exports = {
 
     gerarMateria,
+
+    regenerarCampo,
 
     enviarMateria,
 
