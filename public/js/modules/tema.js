@@ -22,10 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const iconeTema =
         document.getElementById("iconeTema");
 
-    if (!botaoTema || !iconeTema) {
-        return;
-    }
-
     // ========================================
     // CONFIGURAÇÕES
     // ========================================
@@ -47,19 +43,23 @@ document.addEventListener("DOMContentLoaded", () => {
             modoEscuro
         );
 
-        botaoTema.setAttribute(
-            "aria-label",
-            modoEscuro
-                ? "Ativar modo claro"
-                : "Ativar modo escuro"
-        );
+        if (botaoTema) {
 
-        botaoTema.setAttribute(
-            "title",
-            modoEscuro
-                ? "Ativar modo claro"
-                : "Ativar modo escuro"
-        );
+            botaoTema.setAttribute(
+                "aria-label",
+                modoEscuro
+                    ? "Ativar modo claro"
+                    : "Ativar modo escuro"
+            );
+
+            botaoTema.setAttribute(
+                "title",
+                modoEscuro
+                    ? "Ativar modo claro"
+                    : "Ativar modo escuro"
+            );
+
+        }
 
     }
 
@@ -89,31 +89,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // ALTERNAR TEMA
     // ========================================
 
-    botaoTema.addEventListener(
-        "click",
-        () => {
+    if (botaoTema) {
 
-            const temaAtual =
-                document.documentElement.classList.contains("dark")
-                    ? "dark"
-                    : "light";
+        botaoTema.addEventListener(
+            "click",
+            () => {
 
-            const novoTema =
-                temaAtual === "dark"
-                    ? "light"
-                    : "dark";
+                const temaAtual =
+                    document.documentElement.classList.contains("dark")
+                        ? "dark"
+                        : "light";
 
-            localStorage.setItem(
-                CHAVE_TEMA,
-                novoTema
-            );
+                const novoTema =
+                    temaAtual === "dark"
+                        ? "light"
+                        : "dark";
 
-            aplicarTema(
-                novoTema
-            );
+                localStorage.setItem(
+                    CHAVE_TEMA,
+                    novoTema
+                );
 
-        }
-    );
+                aplicarTema(
+                    novoTema
+                );
+
+            }
+        );
+
+    }
 
     // ========================================
     // INICIALIZAR
