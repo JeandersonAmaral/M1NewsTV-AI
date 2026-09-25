@@ -391,7 +391,10 @@ async function enviarImagemParaWordPress(
     imagemUrl,
     titulo,
     tags,
-    altTexto
+    altTexto,
+    tituloImagem,
+    legendaImagem,
+    descricaoImagem
 ) {
 
     if (!imagemUrl) {
@@ -526,16 +529,33 @@ async function enviarImagemParaWordPress(
     const metadados = {
 
         title:
-            tagsTexto || "Imagem da matéria",
+            tituloImagem !== undefined
+                ? tituloImagem
+                : (
+                    tagsTexto ||
+                    "Imagem da matéria"
+                ),
 
         alt_text:
-            altTexto || "Imagem da matéria",
+            altTexto !== undefined
+                ? altTexto
+                : "Imagem da matéria",
 
         caption:
-            tagsTexto || "",
+            legendaImagem !== undefined
+                ? legendaImagem
+                : (
+                    tagsTexto ||
+                    ""
+                ),
 
         description:
-            tagsTexto || ""
+            descricaoImagem !== undefined
+                ? descricaoImagem
+                : (
+                    tagsTexto ||
+                    ""
+                )
     };
 
     const atualizar =
@@ -687,7 +707,10 @@ async function enviarMateriaParaWordPress(materia) {
                     materia.imagem,
                     materia.titulo,
                     materia.tags,
-                    materia.alt_text
+                    materia.alt_text,
+                    materia.imagem_titulo,
+                    materia.imagem_legenda,
+                    materia.imagem_descricao
                 );
 
             if (imagemWordPress) {

@@ -4,7 +4,7 @@
 //
 // Responsável por:
 // - Controlar a imagem da matéria
-// - Controlar o Alt Text
+// - Controlar os metadados da imagem
 // - Exibir o preview da imagem
 // - Exibir as dimensões da imagem
 // - Disponibilizar a imagem para o modo TESTE
@@ -27,6 +27,26 @@ const previewImagem =
 const tamanhoImagem =
     document.getElementById(
         "tamanhoImagem"
+    );
+
+const imagemTituloInput =
+    document.getElementById(
+        "imagemTitulo"
+    );
+
+const imagemAltTextInput =
+    document.getElementById(
+        "imagemAltText"
+    );
+
+const imagemLegendaInput =
+    document.getElementById(
+        "imagemLegenda"
+    );
+
+const imagemDescricaoInput =
+    document.getElementById(
+        "imagemDescricao"
     );
 
 // ========================================
@@ -58,6 +78,83 @@ function definirMateriaAltText(altText) {
 
     materiaAltText =
         altText || "";
+
+    if (imagemAltTextInput) {
+
+        imagemAltTextInput.value =
+            materiaAltText;
+
+    }
+
+}
+
+// ========================================
+// METADADOS DA IMAGEM
+// ========================================
+
+function definirMetadadosImagem(
+    titulo,
+    altText,
+    legenda,
+    descricao
+) {
+
+    if (imagemTituloInput) {
+
+        imagemTituloInput.value =
+            titulo || "";
+
+    }
+
+    definirMateriaAltText(
+        altText || ""
+    );
+
+    if (imagemLegendaInput) {
+
+        imagemLegendaInput.value =
+            legenda || "";
+
+    }
+
+    if (imagemDescricaoInput) {
+
+        imagemDescricaoInput.value =
+            descricao || "";
+
+    }
+
+}
+
+// ========================================
+// OBTER METADADOS DA IMAGEM
+// ========================================
+
+function obterMetadadosImagem() {
+
+    return {
+
+        titulo:
+            imagemTituloInput
+                ?.value
+                .trim() || "",
+
+        alt_text:
+            imagemAltTextInput
+                ?.value
+                .trim() || "",
+
+        legenda:
+            imagemLegendaInput
+                ?.value
+                .trim() || "",
+
+        descricao:
+            imagemDescricaoInput
+                ?.value
+                .trim() || ""
+
+    };
 
 }
 
@@ -116,6 +213,34 @@ function limparImagem() {
 
     materiaAltText = "";
 
+    if (imagemTituloInput) {
+
+        imagemTituloInput.value =
+            "";
+
+    }
+
+    if (imagemAltTextInput) {
+
+        imagemAltTextInput.value =
+            "";
+
+    }
+
+    if (imagemLegendaInput) {
+
+        imagemLegendaInput.value =
+            "";
+
+    }
+
+    if (imagemDescricaoInput) {
+
+        imagemDescricaoInput.value =
+            "";
+
+    }
+
     if (!previewImagem) {
         return;
     }
@@ -156,11 +281,17 @@ window.obterMateriaAltText =
 
     };
 
+window.obterMetadadosImagem =
+    obterMetadadosImagem;
+
 window.definirImagemMateria =
     definirImagemMateria;
 
 window.definirMateriaAltText =
     definirMateriaAltText;
+
+window.definirMetadadosImagem =
+    definirMetadadosImagem;
 
 window.atualizarPreviewImagem =
     atualizarPreviewImagem;
@@ -178,4 +309,3 @@ window.definirImagemMateriaTeste =
         definirImagemMateria(url);
 
     };
-

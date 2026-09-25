@@ -61,11 +61,11 @@ botaoEnvio.addEventListener(
             destinoSelect.value;
 
         // ========================================
-        // ALT TEXT
+        // METADADOS DA IMAGEM
         // ========================================
 
-        const alt_text =
-            obterMateriaAltText().trim();
+        const metadadosImagem =
+            obterMetadadosImagem();
 
         // ========================================
         // PEGAR TAGS
@@ -198,9 +198,17 @@ botaoEnvio.addEventListener(
                                 obterImagemMateria() ||
                                 null,
 
+                            imagem_titulo:
+                                metadadosImagem.titulo,
+
                             alt_text:
-                                alt_text ||
-                                ""
+                                metadadosImagem.alt_text,
+
+                            imagem_legenda:
+                                metadadosImagem.legenda,
+
+                            imagem_descricao:
+                                metadadosImagem.descricao
 
                         })
 

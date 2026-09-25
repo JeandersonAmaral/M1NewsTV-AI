@@ -768,6 +768,37 @@
                     }
 
                     // ========================================
+                    // DEFINIR METADADOS DA IMAGEM
+                    // ========================================
+
+                    const tagsImagem =
+                        materiaTeste.tags.join(", ");
+
+                    if (
+                        typeof window.definirMetadadosImagem ===
+                        "function"
+                    ) {
+
+                        window.definirMetadadosImagem(
+                            "Maricá - Mobilidade urbana",
+                            materiaTeste.alt_text,
+                            "Maricá, Rio de Janeiro",
+                            `Imagem ilustrativa utilizada para representar mobilidade urbana em Maricá. Tags relacionadas: ${tagsImagem}.`
+                        );
+
+                        console.log(
+                            "[TESTE] Metadados da imagem preenchidos."
+                        );
+
+                    } else {
+
+                        console.warn(
+                            "[TESTE] Função definirMetadadosImagem não encontrada."
+                        );
+
+                    }
+
+                    // ========================================
                     // GUARDAR PARA TESTE
                     // ========================================
 

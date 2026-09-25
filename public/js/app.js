@@ -525,11 +525,19 @@ gerarButton.addEventListener(
             );
 
             // ========================================
-            // ALT TEXT
+            // METADADOS DA IMAGEM
             // ========================================
 
-            definirMateriaAltText(
-                materia.alt_text || ""
+            const tagsImagem =
+                Array.isArray(materia.tags)
+                    ? materia.tags.join(", ")
+                    : "";
+
+            definirMetadadosImagem(
+                tagsImagem,
+                materia.alt_text || "",
+                tagsImagem,
+                tagsImagem
             );
 
             // ========================================

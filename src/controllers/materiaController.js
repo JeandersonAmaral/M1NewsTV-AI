@@ -350,7 +350,10 @@ async function enviarMateria(req, res) {
         frase_chave,
         meta_descricao,
         imagem,
+        imagem_titulo,
         alt_text,
+        imagem_legenda,
+        imagem_descricao,
         autorId,
         destino
     } = req.body;
@@ -401,7 +404,10 @@ async function enviarMateria(req, res) {
                 frase_chave,
                 meta_descricao,
                 imagem,
+                imagem_titulo,
                 alt_text,
+                imagem_legenda,
+                imagem_descricao,
                 autorId,
                 destino
 

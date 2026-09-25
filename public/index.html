@@ -5,660 +5,784 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>M1News AI | Assistente de redação</title>
+
     <link rel="icon" type="image/png" href="images/Png/favicon-32x32.png" sizes="32x32">
 
-<script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<script>
-    tailwind.config = {
-        darkMode: "class",
+    <script>
+        tailwind.config = {
+            darkMode: "class",
 
-        theme: {
-            extend: {
-                colors: {
-                    m1: {
-                        500: "#111827",
-                        600: "#0f172a",
-                        700: "#020617"
+            theme: {
+                extend: {
+                    colors: {
+                        m1: {
+                            500: "#111827",
+                            600: "#0f172a",
+                            700: "#020617"
+                        }
                     }
                 }
             }
-        }
-    };
-</script>
+        };
+    </script>
 
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
 
-<!-- CABEÇALHO -->
+    <!-- CABEÇALHO -->
 
-<header class="fixed top-0 left-0 z-50 w-full bg-slate-950 text-white shadow-lg">
+    <header class="fixed top-0 left-0 z-50 w-full bg-slate-950 text-white shadow-lg">
 
-<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
 
-    <!-- ======================================== -->
-    <!-- IDENTIDADE -->
-    <!-- ======================================== -->
+            <!-- ======================================== -->
+            <!-- IDENTIDADE -->
+            <!-- ======================================== -->
 
-    <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4">
 
-        <img src="images/Png/M1_logo.png" alt="M1NewsTV" class="h-20">
-
-        <div>
-
-            <h1 class="text-2xl font-bold tracking-tight">
-                M1News AI
-            </h1>
-
-            <p class="mt-1 text-base text-slate-400">
-                Assistente de redação
-            </p>
-
-            <p class="mt-1 text-xs text-slate-400">
-                Desenvolvido por Jeanderson Amaral
-            </p>
-
-        </div>
-
-    </div>
-
-    <!-- ======================================== -->
-    <!-- AÇÕES DO USUÁRIO -->
-    <!-- ======================================== -->
-
-    <div class="flex items-center gap-3">
-
-        <span class="text-sm font-medium text-slate-300">
-            Tema:
-        </span>
-
-        <button
-            id="alternarTema"
-            type="button"
-            aria-label="Alternar tema"
-            title="Alternar tema"
-            class="relative flex h-6 w-12 items-center overflow-hidden rounded-full border-2 border-gray-700 bg-gray-900 transition-colors duration-300 hover:bg-gray-800">
-
-            <span
-                class="absolute left-1 z-0 flex h-4 w-4 items-center justify-center text-[12px] leading-none text-gray-400">
-                ☀️
-            </span>
-
-            <span
-                class="absolute right-1 z-0 flex h-4 w-4 items-center justify-center text-[12px] leading-none text-gray-400">
-                🌙
-            </span>
-
-            <span
-                id="iconeTema"
-                class="absolute left-1 z-10 h-4 w-4 rounded-full bg-white shadow-md transition-all duration-300 dark:left-6">
-            </span>
-
-        </button>
-
-        <div
-            class="flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900 px-4 py-2 text-sm text-gray-300">
-
-            <span class="h-2 w-2 rounded-full bg-amber-500"></span>
-
-            v2.5.1 - Beta
-
-        </div>
-
-        <button
-            id="sair"
-            type="button"
-            class="rounded-xl border border-gray-700 bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 transition hover:bg-gray-800 hover:text-white">
-            Logout
-        </button>
-
-    </div>
-
-</div>
-
-</header>
-
-<!-- CONTEÚDO PRINCIPAL -->
-
-<main class="mx-auto max-w-7xl px-4 pb-8 pt-40 sm:px-6">
-
-<!-- ======================================== -->
-<!-- GERAÇÃO DE MATÉRIA -->
-<!-- ======================================== -->
-
-<section
-    class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
-
-    <div class="mb-5">
-
-        <h2 class="text-xl font-bold">
-            Nova matéria
-        </h2>
-
-        <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-            Insira a URL da matéria que deseja converter em conteúdo para o M1NewsTV.
-        </p>
-
-    </div>
-
-    <div class="flex flex-col gap-3 md:flex-row">
-
-        <input type="url" id="url" placeholder="https://exemplo.com/materia"
-            class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700">
-
-        <button id="gerar" type="button"
-            class="rounded-xl bg-slate-950 px-6 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
-            Gerar conteúdo
-        </button>
-
-    </div>
-
-    <div id="loading"
-        class="mt-4 hidden items-center gap-3 text-sm text-slate-500 dark:text-gray-400">
-
-        <div
-            class="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900 dark:border-gray-700 dark:border-t-gray-200">
-        </div>
-
-        <span>
-            Lendo a matéria e preparando o conteúdo...
-        </span>
-
-    </div>
-
-</section>
-
-<!-- ======================================== -->
-<!-- RESULTADO DA MATÉRIA -->
-<!-- ======================================== -->
-
-<section id="resultado" class="hidden space-y-6">
-
-    <!-- ======================================== -->
-    <!-- CONTEÚDO DA MATÉRIA -->
-    <!-- ======================================== -->
-
-    <section
-        class="rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
-
-        <div class="border-b border-slate-200 px-6 py-5 dark:border-gray-800">
-
-            <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <img src="images/Png/M1_logo.png" alt="M1NewsTV" class="h-20">
 
                 <div>
 
-                    <h2 class="text-xl font-bold">
-                        Matéria
-                    </h2>
+                    <h1 class="text-2xl font-bold tracking-tight">
+                        M1News AI
+                    </h1>
 
-                    <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                        Revise o conteúdo antes de enviar para o WordPress.
+                    <p class="mt-1 text-base text-slate-400">
+                        Assistente de redação
+                    </p>
+
+                    <p class="mt-1 text-xs text-slate-400">
+                        Desenvolvido por Jeanderson Amaral
                     </p>
 
                 </div>
 
-                <span
-                    class="inline-flex w-fit items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+            </div>
+
+            <!-- ======================================== -->
+            <!-- AÇÕES DO USUÁRIO -->
+            <!-- ======================================== -->
+
+            <div class="flex items-center gap-3">
+
+                <span class="text-sm font-medium text-slate-300">
+                    Tema:
+                </span>
+
+                <button
+                    id="alternarTema"
+                    type="button"
+                    aria-label="Alternar tema"
+                    title="Alternar tema"
+                    class="relative flex h-6 w-12 items-center overflow-hidden rounded-full border-2 border-gray-700 bg-gray-900 transition-colors duration-300 hover:bg-gray-800">
+
+                    <span
+                        class="absolute left-1 z-0 flex h-4 w-4 items-center justify-center text-[12px] leading-none text-gray-400">
+                        ☀️
+                    </span>
+
+                    <span
+                        class="absolute right-1 z-0 flex h-4 w-4 items-center justify-center text-[12px] leading-none text-gray-400">
+                        🌙
+                    </span>
+
+                    <span
+                        id="iconeTema"
+                        class="absolute left-1 z-10 h-4 w-4 rounded-full bg-white shadow-md transition-all duration-300 dark:left-6">
+                    </span>
+
+                </button>
+
+                <div
+                    class="flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900 px-4 py-2 text-sm text-gray-300">
 
                     <span class="h-2 w-2 rounded-full bg-amber-500"></span>
 
-                    Aguardando revisão
+                    v2.5.1 - Beta
 
-                </span>
+                </div>
+
+                <button
+                    id="sair"
+                    type="button"
+                    class="rounded-xl border border-gray-700 bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 transition hover:bg-gray-800 hover:text-white">
+                    Logout
+                </button>
 
             </div>
 
         </div>
 
-        <div class="space-y-6 p-6">
+    </header>
 
-            <!-- TÍTULO -->
+    <!-- CONTEÚDO PRINCIPAL -->
 
-            <div>
+    <main class="mx-auto max-w-7xl px-4 pb-8 pt-40 sm:px-6">
 
-                <div class="mb-2 flex items-center justify-between">
-
-                    <label for="titulo"
-                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Título
-                    </label>
-
-                    <div class="flex items-center gap-3">
-
-                        <span id="contadorTitulo" class="text-xs text-slate-400">
-                            0 / 60 caracteres
-                        </span>
-
-                        <button
-                            id="regenerarTitulo"
-                            type="button"
-                            title="Regenerar título"
-                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-                            ↻ Regenerar
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <input type="text" id="titulo"
-                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-lg font-semibold text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
-
-            </div>
-
-            <!-- DESCRIÇÃO -->
-
-            <div>
-
-                <div class="mb-2 flex items-center justify-between">
-
-                    <label for="descricao"
-                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Descrição
-                    </label>
-
-                    <div class="flex items-center gap-3">
-
-                        <span class="text-xs text-slate-400">
-                            Será exibido junto a imagem destacada na Home
-                        </span>
-
-                        <button
-                            id="regenerarDescricao"
-                            type="button"
-                            title="Regenerar descrição"
-                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-                            ↻ Regenerar
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <textarea id="descricao" rows="3"
-                    class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
-
-            </div>
-
-            <!-- SUBTÍTULO -->
-
-            <div>
-
-                <div class="mb-2 flex items-center justify-between">
-
-                    <label for="subtitulo"
-                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Subtítulo
-                    </label>
-
-                    <div class="flex items-center gap-3">
-
-                        <span class="text-xs text-slate-400">
-                            Será convertido em H1
-                        </span>
-
-                        <button
-                            id="regenerarSubtitulo"
-                            type="button"
-                            title="Regenerar subtítulo"
-                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-                            ↻ Regenerar
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <textarea id="subtitulo" rows="3"
-                    class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
-
-            </div>
-
-            <!-- CONTEÚDO -->
-
-            <div>
-
-                <div class="mb-2 flex items-center justify-between">
-
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Conteúdo
-                    </label>
-
-                    <span class="text-xs text-slate-400">
-                        Edite o conteúdo da matéria, adicione ou remova imagens, vídeos e links.
-                    </span>
-
-                </div>
-
-                <div id="editor" contenteditable="true" spellcheck="true"
-                    class="rounded-xl border border-slate-300 bg-white px-6 py-5 text-base leading-8 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
-                </div>
-
-                <p class="mt-2 text-xs text-slate-400">
-                    Você pode revisar e editar o texto diretamente aqui.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- ======================================== -->
-    <!-- AUTOR DA MATÉRIA -->
-    <!-- ======================================== -->
-
-    <section
-        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
-
-        <div class="mb-5">
-
-            <h2 class="text-lg font-bold">
-                Autor
-            </h2>
-
-            <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                Selecione o autor que será responsável pela matéria no WordPress.
-            </p>
-
-        </div>
-
-        <div>
-
-            <select id="autor"
-                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
-
-                <option value="58">
-                    M1NewsTV AI
-                </option>
-
-            </select>
-
-        </div>
-
-    </section>
-
-    <!-- ======================================== -->
-    <!-- TAGS - IMAGEM - CATEGORIAS -->
-    <!-- ======================================== -->
-
-    <div class="grid gap-6 lg:grid-cols-2">
-
-        <!-- COLUNA ESQUERDA -->
-
-        <div class="space-y-6">
-
-            <!-- TAGS -->
-
-            <section
-                class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
-
-                <div class="mb-5">
-
-                    <h2 class="text-lg font-bold">
-                        Tags
-                    </h2>
-
-                    <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                        Revise ou adicione tags à matéria.
-                    </p>
-
-                </div>
-
-                <div id="tags" class="mb-4 flex flex-wrap gap-2"></div>
-
-                <div class="flex gap-2">
-
-                    <input type="text" id="novaTag" placeholder="Nova tag"
-                        class="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700">
-
-                    <button id="adicionarTag" type="button"
-                        class="rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
-                        Adicionar
-                    </button>
-
-                </div>
-
-            </section>
-
-            <!-- IMAGEM -->
-
-            <section id="previewImagemContainer"
-                class="hidden min-h-[550px] rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
-
-                <div class="mb-3">
-
-                    <h2 class="text-lg font-bold">
-                        Capa da matéria (Imagem destacada)
-                    </h2>
-
-                    <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                        A imagem será redimensionada para Largura de 1080px, mantendo a proporção original.
-                    </p>
-
-                </div>
-
-                <div
-                    class="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 dark:border-gray-700 dark:bg-gray-800">
-
-                    <img id="previewImagem" src="" alt="Preview da imagem da matéria"
-                        class="block h-auto w-full object-contain">
-
-                </div>
-
-                <p id="tamanhoImagem" class="mt-2 text-left text-xs text-slate-400">
-                    Dimensões atuais: —
-                </p>
-
-            </section>
-
-        </div>
-
-        <!-- CATEGORIAS -->
+        <!-- ======================================== -->
+        <!-- GERAÇÃO DE MATÉRIA -->
+        <!-- ======================================== -->
 
         <section
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
+            class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
 
             <div class="mb-5">
 
-                <h2 class="text-lg font-bold">
-                    Categorias
+                <h2 class="text-xl font-bold">
+                    Nova matéria
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                    Revise as categorias sugeridas.
+                    Insira a URL da matéria que deseja converter em conteúdo para o M1NewsTV.
                 </p>
 
             </div>
 
-            <div id="categorias"
-                class="grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2"></div>
+            <div class="flex flex-col gap-3 md:flex-row">
 
-        </section>
+                <input
+                    type="url"
+                    id="url"
+                    placeholder="https://exemplo.com/materia"
+                    class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700">
 
-    </div>
+                <button
+                    id="gerar"
+                    type="button"
+                    class="rounded-xl bg-slate-950 px-6 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+                    Gerar conteúdo
+                </button>
 
-    <!-- ======================================== -->
-    <!-- CONFIGURAÇÕES DE SEO -->
-    <!-- ======================================== -->
+            </div>
 
-    <section
-        class="rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
+            <div
+                id="loading"
+                class="mt-4 hidden items-center gap-3 text-sm text-slate-500 dark:text-gray-400">
 
-        <div class="border-b border-slate-200 px-6 py-5 dark:border-gray-800">
-
-            <div class="flex items-center justify-between">
-
-                <div>
-
-                    <h2 class="text-xl font-bold">
-                        Yoast SEO
-                    </h2>
-
-                    <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                        Informações que serão enviadas para o Yoast SEO.
-                    </p>
-
+                <div
+                    class="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900 dark:border-gray-700 dark:border-t-gray-200">
                 </div>
 
-                <span
-                    class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 dark:bg-gray-800 dark:text-gray-300">
-                    SEO
+                <span>
+                    Lendo a matéria e preparando o conteúdo...
                 </span>
 
             </div>
 
-        </div>
+        </section>
 
-        <div class="space-y-6 p-6">
+        <!-- ======================================== -->
+        <!-- RESULTADO DA MATÉRIA -->
+        <!-- ======================================== -->
 
-            <!-- FRASE-CHAVE -->
+        <section id="resultado" class="hidden space-y-6">
 
-            <div>
+            <!-- ======================================== -->
+            <!-- CONTEÚDO DA MATÉRIA -->
+            <!-- ======================================== -->
 
-                <div class="mb-2 flex items-center justify-between">
+            <section
+                class="rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
 
-                    <label for="frase_chave"
-                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Frase-chave foco
-                    </label>
+                <div class="border-b border-slate-200 px-6 py-5 dark:border-gray-800">
 
-                    <button
-                        id="regenerarFraseChave"
-                        type="button"
-                        title="Regenerar frase-chave"
-                        class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-                        ↻ Regenerar
-                    </button>
+                    <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
 
-                </div>
+                        <div>
 
-                <input type="text" id="frase_chave"
-                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+                            <h2 class="text-xl font-bold">
+                                Matéria
+                            </h2>
 
-            </div>
+                            <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                                Revise o conteúdo antes de enviar para o WordPress.
+                            </p>
 
-            <!-- SLUG -->
+                        </div>
 
-            <div>
+                        <span
+                            class="inline-flex w-fit items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
 
-                <div class="mb-2 flex items-center justify-between">
+                            <span class="h-2 w-2 rounded-full bg-amber-500"></span>
 
-                    <label for="slug"
-                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Slug
-                    </label>
+                            Aguardando revisão
 
-                    <button
-                        id="regenerarSlug"
-                        type="button"
-                        title="Regenerar slug"
-                        class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-                        ↻ Regenerar
-                    </button>
-
-                </div>
-
-                <input type="text" id="slug"
-                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
-
-            </div>
-
-            <!-- META DESCRIÇÃO -->
-
-            <div>
-
-                <div class="mb-2 flex items-center justify-between">
-
-                    <label for="meta_descricao"
-                        class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
-                        Meta descrição
-                    </label>
-
-                    <div class="flex items-center gap-3">
-
-                        <span id="contadorMeta" class="text-xs text-slate-400">
-                            0 / 160 caracteres
                         </span>
-
-                        <button
-                            id="regenerarMetaDescricao"
-                            type="button"
-                            title="Regenerar meta descrição"
-                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-                            ↻ Regenerar
-                        </button>
 
                     </div>
 
                 </div>
 
-                <textarea id="meta_descricao" rows="3"
-                    class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+                <div class="space-y-6 p-6">
+
+                    <!-- TÍTULO -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label
+                                for="titulo"
+                                class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Título
+                            </label>
+
+                            <div class="flex items-center gap-3">
+
+                                <span id="contadorTitulo" class="text-xs text-slate-400">
+                                    0 / 60 caracteres
+                                </span>
+
+                                <button
+                                    id="regenerarTitulo"
+                                    type="button"
+                                    title="Regenerar título"
+                                    class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    ↻ Regenerar
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <input
+                            type="text"
+                            id="titulo"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-lg font-semibold text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                    </div>
+
+                    <!-- DESCRIÇÃO -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label
+                                for="descricao"
+                                class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Descrição
+                            </label>
+
+                            <div class="flex items-center gap-3">
+
+                                <span class="text-xs text-slate-400">
+                                    Será exibido junto a imagem destacada na Home
+                                </span>
+
+                                <button
+                                    id="regenerarDescricao"
+                                    type="button"
+                                    title="Regenerar descrição"
+                                    class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    ↻ Regenerar
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <textarea
+                            id="descricao"
+                            rows="3"
+                            class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+
+                    </div>
+
+                    <!-- SUBTÍTULO -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label
+                                for="subtitulo"
+                                class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Subtítulo
+                            </label>
+
+                            <div class="flex items-center gap-3">
+
+                                <span class="text-xs text-slate-400">
+                                    Será convertido em H1
+                                </span>
+
+                                <button
+                                    id="regenerarSubtitulo"
+                                    type="button"
+                                    title="Regenerar subtítulo"
+                                    class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    ↻ Regenerar
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <textarea
+                            id="subtitulo"
+                            rows="3"
+                            class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+
+                    </div>
+
+                    <!-- CONTEÚDO -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Conteúdo
+                            </label>
+
+                            <span class="text-xs text-slate-400">
+                                Edite o conteúdo da matéria, adicione ou remova imagens, vídeos e links.
+                            </span>
+
+                        </div>
+
+                        <div
+                            id="editor"
+                            contenteditable="true"
+                            spellcheck="true"
+                            class="rounded-xl border border-slate-300 bg-white px-6 py-5 text-base leading-8 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+                        </div>
+
+                        <p class="mt-2 text-xs text-slate-400">
+                            Você pode revisar e editar o texto diretamente aqui.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================== -->
+            <!-- AUTOR + TAGS -->
+            <!-- ======================================== -->
+
+            <div class="grid gap-6 lg:grid-cols-2">
+
+                <!-- AUTOR DA MATÉRIA -->
+
+                <section
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
+
+                    <div class="mb-5">
+
+                        <h2 class="text-lg font-bold">
+                            Autor
+                        </h2>
+
+                        <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                            Selecione o autor que será responsável pela matéria no WordPress.
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <select
+                            id="autor"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                            <option value="58">
+                                M1NewsTV AI
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+                <!-- TAGS -->
+
+                <section
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
+
+                    <div class="mb-5">
+
+                        <h2 class="text-lg font-bold">
+                            Tags
+                        </h2>
+
+                        <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                            Revise ou adicione tags à matéria.
+                        </p>
+
+                    </div>
+
+                    <div id="tags" class="mb-4 flex flex-wrap gap-2"></div>
+
+                    <div class="flex gap-2">
+
+                        <input
+                            type="text"
+                            id="novaTag"
+                            placeholder="Nova tag"
+                            class="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                        <button
+                            id="adicionarTag"
+                            type="button"
+                            class="rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                            Adicionar
+                        </button>
+
+                    </div>
+
+                </section>
 
             </div>
 
-        </div>
+            <!-- ======================================== -->
+            <!-- IMAGEM + CATEGORIAS -->
+            <!-- ======================================== -->
 
-    </section>
+            <div class="grid gap-6 lg:grid-cols-2">
 
-    <!-- ======================================== -->
-    <!-- ENVIO DA MATÉRIA -->
-    <!-- ======================================== -->
+                <!-- IMAGEM -->
 
-    <section class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+                <section
+                    id="previewImagemContainer"
+                    class="hidden min-h-[550px] rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
 
-        <div class="flex items-center gap-2">
+                    <div class="mb-3">
 
-            <label for="destino" class="text-sm font-semibold text-slate-700 dark:text-gray-300">
-                Modo:
-            </label>
+                        <h2 class="text-lg font-bold">
+                            Capa da matéria (Imagem destacada)
+                        </h2>
 
-            <select id="destino"
-                class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+                        <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                            A imagem será redimensionada para Largura de 1080px, mantendo a proporção original.
+                        </p>
 
-                <option value="publish">
-                    Post
-                </option>
+                    </div>
 
-                <option value="draft">
-                    Rascunho
-                </option>
+                    <div
+                        class="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 dark:border-gray-700 dark:bg-gray-800">
 
-            </select>
+                        <img
+                            id="previewImagem"
+                            src=""
+                            alt="Preview da imagem da matéria"
+                            class="block h-auto w-full object-contain">
 
-        </div>
+                    </div>
 
-        <button id="enviar" type="button"
-            class="rounded-xl bg-slate-950 px-7 py-3 font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
-            Enviar
-        </button>
+                    <p id="tamanhoImagem" class="mt-2 text-left text-xs text-slate-400">
+                        Dimensões atuais: —
+                    </p>
 
-        <button id="limpar" type="button"
-            class="rounded-xl bg-red-600 px-7 py-3 font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50">
-            Limpar
-        </button>
+                    <!-- ======================================== -->
+                    <!-- METADADOS DA IMAGEM -->
+                    <!-- ======================================== -->
 
-    </section>
+                    <div class="mt-6 space-y-4">
 
-</section>
+                        <!-- TÍTULO DA IMAGEM -->
 
-</main>
+                        <div>
 
-<script src="/js/modules/autenticacao.js"></script>
-<script src="/js/modules/tema.js"></script>
-<script src="/js/modules/links.js"></script>
-<script src="/js/modules/categorias.js"></script>
-<script src="/js/modules/tags.js"></script>
-<script src="/js/modules/seo.js"></script>
-<script src="/js/modules/imagemCapa.js"></script>
-<script src="/js/modules/autores.js"></script>
-<script src="/js/modules/envio.js"></script>
-<script src="/js/modules/limpar.js"></script>
-<script src="/js/app.js"></script>
-<script src="/js/teste.js"></script>
+                            <label
+                                for="imagemTitulo"
+                                class="mb-2 block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Título da imagem
+                            </label>
+
+                            <input
+                                type="text"
+                                id="imagemTitulo"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                        </div>
+
+                        <!-- TEXTO ALTERNATIVO -->
+
+                        <div>
+
+                            <label
+                                for="imagemAltText"
+                                class="mb-2 block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Texto alternativo (ALT)
+                            </label>
+
+                            <textarea
+                                id="imagemAltText"
+                                rows="2"
+                                class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+
+                        </div>
+
+                        <!-- LEGENDA -->
+
+                        <div>
+
+                            <label
+                                for="imagemLegenda"
+                                class="mb-2 block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Legenda
+                            </label>
+
+                            <textarea
+                                id="imagemLegenda"
+                                rows="2"
+                                class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+
+                        </div>
+
+                        <!-- DESCRIÇÃO -->
+
+                        <div>
+
+                            <label
+                                for="imagemDescricao"
+                                class="mb-2 block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Descrição
+                            </label>
+
+                            <textarea
+                                id="imagemDescricao"
+                                rows="3"
+                                class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- CATEGORIAS -->
+
+                <section
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
+
+                    <div class="mb-5">
+
+                        <h2 class="text-lg font-bold">
+                            Categorias
+                        </h2>
+
+                        <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                            Revise as categorias sugeridas.
+                        </p>
+
+                    </div>
+
+                    <div
+                        id="categorias"
+                        class="grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
+                    </div>
+
+                </section>
+
+            </div>
+
+            <!-- ======================================== -->
+            <!-- CONFIGURAÇÕES DE SEO -->
+            <!-- ======================================== -->
+
+            <section
+                class="rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 dark:border-gray-800 dark:bg-gray-900">
+
+                <div class="border-b border-slate-200 px-6 py-5 dark:border-gray-800">
+
+                    <div class="flex items-center justify-between">
+
+                        <div>
+
+                            <h2 class="text-xl font-bold">
+                                Yoast SEO
+                            </h2>
+
+                            <p class="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                                Informações que serão enviadas para o Yoast SEO.
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 dark:bg-gray-800 dark:text-gray-300">
+                            SEO
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="space-y-6 p-6">
+
+                    <!-- FRASE-CHAVE -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label
+                                for="frase_chave"
+                                class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Frase-chave foco
+                            </label>
+
+                            <button
+                                id="regenerarFraseChave"
+                                type="button"
+                                title="Regenerar frase-chave"
+                                class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                ↻ Regenerar
+                            </button>
+
+                        </div>
+
+                        <input
+                            type="text"
+                            id="frase_chave"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                    </div>
+
+                    <!-- SLUG -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label
+                                for="slug"
+                                class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Slug
+                            </label>
+
+                            <button
+                                id="regenerarSlug"
+                                type="button"
+                                title="Regenerar slug"
+                                class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                ↻ Regenerar
+                            </button>
+
+                        </div>
+
+                        <input
+                            type="text"
+                            id="slug"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                    </div>
+
+                    <!-- META DESCRIÇÃO -->
+
+                    <div>
+
+                        <div class="mb-2 flex items-center justify-between">
+
+                            <label
+                                for="meta_descricao"
+                                class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
+                                Meta descrição
+                            </label>
+
+                            <div class="flex items-center gap-3">
+
+                                <span id="contadorMeta" class="text-xs text-slate-400">
+                                    0 / 160 caracteres
+                                </span>
+
+                                <button
+                                    id="regenerarMetaDescricao"
+                                    type="button"
+                                    title="Regenerar meta descrição"
+                                    class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    ↻ Regenerar
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <textarea
+                            id="meta_descricao"
+                            rows="3"
+                            class="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700"></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================== -->
+            <!-- ENVIO DA MATÉRIA -->
+            <!-- ======================================== -->
+
+            <section class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+                <div class="flex items-center gap-2">
+
+                    <label
+                        for="destino"
+                        class="text-sm font-semibold text-slate-700 dark:text-gray-300">
+                        Modo:
+                    </label>
+
+                    <select
+                        id="destino"
+                        class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-gray-500 dark:focus:ring-gray-700">
+
+                        <option value="publish">
+                            Post
+                        </option>
+
+                        <option value="draft">
+                            Rascunho
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button
+                    id="enviar"
+                    type="button"
+                    class="rounded-xl bg-slate-950 px-7 py-3 font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+                    Enviar
+                </button>
+
+                <button
+                    id="limpar"
+                    type="button"
+                    class="rounded-xl bg-red-600 px-7 py-3 font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50">
+                    Limpar
+                </button>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <script src="/js/modules/autenticacao.js"></script>
+    <script src="/js/modules/tema.js"></script>
+    <script src="/js/modules/links.js"></script>
+    <script src="/js/modules/categorias.js"></script>
+    <script src="/js/modules/tags.js"></script>
+    <script src="/js/modules/seo.js"></script>
+    <script src="/js/modules/imagemCapa.js"></script>
+    <script src="/js/modules/autores.js"></script>
+    <script src="/js/modules/envio.js"></script>
+    <script src="/js/modules/limpar.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/teste.js"></script>
 
 </body>
 
